@@ -17,7 +17,7 @@
 
 ## Desafio 🚀 🚀 🚀
 
-![screen](/image.png)
+![screen](/challange_screen_home.png)
 
 O desafio consiste em criar um projeto com o design da imagem **acima**, utilizando a [API do YouTube](https://developers.google.com/youtube/v3)
 
