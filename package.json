@@ -12,9 +12,10 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
-    "test:bdd": "cucumber-js ./tests/e2e/features --require ./tests/e2e/steps"
+    "test:bdd": "cucumber-js test"
   },
   "dependencies": {
+    "@cucumber/cucumber": "^12.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.548.0",
