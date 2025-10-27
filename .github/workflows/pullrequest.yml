@@ -1,0 +1,197 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  install:
+    name: Install dependencies (cache)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+  commitlint:
+    name: Commitlint (Conventional Commits)
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run commitlint action
+        uses: wagoid/commitlint-github-action@v4
+        # the action uses commitlint with the conventional config by default
+
+  typecheck:
+    name: Type check
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - name: Install dependencies (cache)
+        run: npm ci
+      - name: Run TypeScript type check
+        run: npm run type-check
+
+  build:
+    name: Build
+    needs: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+
+  # test:
+  #   name: Unit & Integration Tests
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #     - name: Install
+  #       run: npm ci
+  #     - name: Run unit & integration tests
+  #       run: npm test -- --runInBand
+
+  # e2e:
+  #   name: E2E (Playwright)
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #     - name: Install
+  #       run: npm ci
+  #     - name: Build
+  #       run: npm run build
+  #     - name: Start server in background
+  #       run: |
+  #         nohup npm run start &>/tmp/next.log &
+  #         n=0; until curl -sSf http://localhost:3000 >/dev/null || [ $n -ge 30 ]; do n=$((n+1)); sleep 1; done
+  #     - name: Run Playwright tests
+  #       run: npm run test:e2e
+
+  # bdd:
+  #   name: BDD (Cucumber)
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #     - name: Install
+  #       run: npm ci
+  #     - name: Run BDD tests
+  #       run: npm run test:bdd
+
+  # accessibility:
+  #   name: Accessibility (axe + pa11y)
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #     - name: Install
+  #       run: npm ci
+  #     - name: Build
+  #       run: npm run build
+  #     - name: Start server in background
+  #       run: |
+  #         nohup npm run start &>/tmp/next.log &
+  #         n=0; until curl -sSf http://localhost:3000 >/dev/null || [ $n -ge 30 ]; do n=$((n+1)); sleep 1; done
+  #     - name: Run axe-core CLI
+  #       run: npx @axe-core/cli http://localhost:3000 --save axe-report.json || true
+  #     - name: Run pa11y
+  #       run: npx pa11y http://localhost:3000 --reporter json > pa11y.json || true
+  #     - name: Upload accessibility reports
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: accessibility-reports
+  #         path: |
+  #           axe-report.json
+  #           pa11y.json
+
+  # performance:
+  #   name: Performance (Lighthouse via LHCI 0.7.x)
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '18'
+  #         cache: 'npm'
+  #     - name: Install
+  #       run: npm ci
+  #     - name: Build
+  #       run: npm run build
+  #     - name: Start server in background
+  #       run: |
+  #         nohup npm run start &>/tmp/next.log &
+  #         n=0; until curl -sSf http://localhost:3000 >/dev/null || [ $n -ge 30 ]; do n=$((n+1)); sleep 1; done
+  #     - name: Run LHCI autorun (temporary public storage)
+  #       run: npx -y @lhci/cli@0.7.x autorun --upload.target=temporary-public-storage
+
+  # security-audit:
+  #   name: Security (npm audit)
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '18'
+  #         cache: 'npm'
+  #     - name: Install
+  #       run: npm ci
+  #     - name: Run npm audit (fail on high)
+  #       run: npm audit --audit-level=high || true
+
+  # codeql:
+  #   name: CodeQL analysis
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #     - name: Initialize CodeQL
+  #       uses: github/codeql-action/init@v2
+  #       with:
+  #         languages: javascript
+  #     - name: Perform CodeQL analysis
+  #       uses: github/codeql-action/analyze@v2
