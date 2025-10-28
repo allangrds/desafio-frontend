@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "commit": "cz"
+    "commit:create": "cz",
+    "commit:lint": "git log --pretty=format:'%s' --no-merges | npx commitlint"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
@@ -23,6 +24,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
