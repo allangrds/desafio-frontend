@@ -1,17 +1,15 @@
 # Frontend Challenge | YouTube Clone
 
-## Overview
-
 A practical implementation of the Bycoders frontend challenge: a video platform client powered by the YouTube Data API v3. The app focuses on search, a compelling home experience, state management, and a locally-persisted search history. Stretch goals include Google OAuth and video upload.
 
 ## Summary
 
-- [Overview](#overview)
 - [Tech Stack](#tech-stack)
 - [Project Architecture](#project-architecture)
 - [Technical Decisions](#technical-decisions)
-- [Getting Started (optional)](#getting-started-optional)
-- [Useful Scripts (optional)](#useful-scripts-optional)
+- [Getting Started](#getting-started)
+- [Useful Scripts](#useful-scripts)
+- [O que falta](#o-que-falta)
 
 ## Tech Stack
 
@@ -25,102 +23,196 @@ A practical implementation of the Bycoders frontend challenge: a video platform 
 - Styling and UI
   - Tailwind CSS 4 + PostCSS
   - shadcn/ui (Radix UI under the hood)
-  - class-variance-authority, tailwind-merge, clsx
   - lucide-react (icons)
 - State and data
   - Zustand 5 (with localStorage persistence middleware)
-  - MSW (Mock Service Worker) for API mocking in dev/tests)
+  - **MSW (Mock Service Worker) for API mocking in dev/tests)**
 - Quality and DX
   - Biome 2 (linter/formatter)
   - Commitizen + Conventional Commits, Commitlint
 - Testing
   - Jest 30 + Testing Library (+ jsdom)
-  - Playwright for E2E
-  - Stryker Mutator for mutation testing
-  - Storybook 10 (+ Docs, A11y, Vitest addon)
+  - Storybook 10
+  - **Playwright for E2E**
+  - **Stryker Mutator for mutation testing**
 
 Versions reflect `package.json` in this repo.
 
 ## Project Architecture
 
+This project follows a feature-based architecture with clear separation of concerns between server and client components:
+
+### High-Level Architecture
+
+```text
+App Router (page.tsx) - SERVER
+    ↓
+Feature Component (home.tsx) - SERVER
+    ↓ (slots with React.Suspense)
+    ├─→ Server Components (UserMenu, FeaturedVideos) - SERVER
+    │       ↓
+    │   YouTube API Service - SERVER
+    │
+    └─→ Container (home.container.tsx) - CLIENT
+            ↓
+        Hooks (useHomeLogic) - CLIENT
+            ↓
+        Stores (Zustand + localStorage) - CLIENT
+            ↓
+        View (home.view.tsx) - CLIENT
+```
+
+**Key Concepts:**
+
+- **Server Components**: Handle data fetching, API calls (default in Next.js 15)
+- **Client Components**: Manage interactivity, state, and user interactions (marked with `'use client'`)
+- **Suspense Boundaries**: Enable streaming and loading states
+- **Container/View Pattern**: Separates business logic (container) from presentation (view)
+
+### Folder Structure
+
 ```text
 ├─ src/
-│  ├─ app/
-│  │  ├─ layout.tsx  Base layout
-│  │  ├─ page.tsx  Base content route file
-│  │  └─ api/  Base folder por internal /api
-│  ├─ features/
-│  │  └─ home/
-│  │     ├─ index.ts  Export all components, props and types
-│  │     ├─ home.logical.tsx  Contains hooks, stores and other business logic informations
-│  │     ├─ home.view.tsx
-│  │     ├─ home.test.tsx
-│  │     ├─ home.hooks.tsx
-│  │     └─ home.types.ts
+│  ├─ app/                      # Next.js App Router
+│  │  ├─ layout.tsx             # Root layout
+│  │  ├─ page.tsx               # Home page
+│  │  ├─ results/               # Results page
+│  │  └─ not-found.tsx          # 404 page
+│  ├─ features/                 # Feature modules
+│  │  ├─ home/
+│  │  │  ├─ index.ts            # Public exports
+│  │  │  ├─ home.tsx            # Main component
+│  │  │  ├─ home.container.tsx  # Container (logic)
+│  │  │  ├─ home.view.tsx       # Presentation
+│  │  │  ├─ home.hooks.ts       # Custom hooks
+│  │  │  └─ *.test.tsx          # Tests
+│  │  └─ results/               # Similar structure
 │  ├─ components/
-│  │  ├─ ui/  For shadcn
-│  │  └─ shared/  Shared between features
+│  │  ├─ ui/                    # shadcn/ui primitives
+│  │  └─ shared/                # Reusable components
 │  │     └─ header/
-│  │        ├─ index.ts  Export all components, props and types
+│  │        ├─ index.ts
 │  │        ├─ header.tsx
-│  │        ├─ header.stories.tsx
-│  │        ├─ header.test.tsx
-│  │        └─ header.types.ts
-│  ├─ mocks/
-│  ├─ stores/
-│  ├─ services/
-│  ├─ di/  service factory (injects implementations)
-│  └─ types/  For sharable types
-└─ tests/  Folder for E2E tests
+│  │        └─ *.test.tsx
+│  ├─ services/                 # API services
+│  │  └─ youtube/
+│  ├─ stores/                   # Global state (Zustand)
+│  ├─ types/                    # Shared TypeScript types
+│  └─ lib/                      # Utilities
+└─ tests/                       # E2E tests (Playwright)
 ```
+
+### Architecture Principles
+
+- **Container/View Pattern**: Separates business logic from presentation
+- **Feature-based**: Related code lives together
+- **Server Components First**: Leverages Next.js 15 capabilities
+- **Type Safety**: Full TypeScript coverage
+- **Testing**: Unit, integration, and E2E tests
 
 Notes
 
-- Feature-based structure keeps business logic and UI close while maintaining separation between view (`*.view.tsx`) and logic (`*.logical.tsx`, hooks, stores).
+- Feature-based structure keeps business logic and UI close while maintaining separation between view (`*.view.tsx`) and container (`*.container.tsx`, hooks, stores).
 - `components/ui` hosts shadcn primitives; `components/shared` hosts reusable composites across features.
-- `di` centralizes dependency injection/factories to decouple services from views.
-- `tests` focuses on E2E flows (Playwright). Unit/integration tests live next to their subjects.
 
+## Getting Started
 
-## Technical Decisions
-
-- Next.js 16 with App Router and Server Components
-  - Enables SSR/streaming and a clear data-fetching model for fast first paint and good SEO.
-- React 19 + React Compiler
-  - Opts into new React performance model; the compiler reduces avoidable re-renders without manual memoization.
-- State management with Zustand 5
-  - Minimal, ergonomic global state with persistence middleware to keep the search history locally.
-- API interactions with MSW in dev/tests
-  - Mocks YouTube endpoints to make development and test runs stable and deterministic.
-- Testing strategy
-  - Unit/Integration: Jest + Testing Library (+ jsdom) close to components.
-  - E2E: Playwright for user-centric flows.
-  - Mutation: Stryker ensures tests are meaningful by killing mutants.
-- Code quality and commits
-  - Biome (lint/format) keeps the codebase consistent and fast to check.
-  - Commitizen + Commitlint enforce Conventional Commits, improving history/changelogs.
-
-These choices aim to balance delivery speed, testability, and long-term maintainability.
-
-## Getting Started (optional)
-
-Prerequisites
+### Prerequisites
 
 - Node 22.14+ (use `nvm use`) or Docker
 - A YouTube Data API v3 key (for live API usage)
 
-Quick start
+### Environment Setup
 
-1. Install dependencies: `npm install`
-2. Run the app: `npm run dev`
-3. Open Storybook: `npm run storybook`
-4. Run tests: `npm test` (unit), `npm run test:mutation`, `npx playwright test`
+1. Copy the environment file:
 
-Docker (optional)
+   ```bash
+   cp .env.example .env
+   ```
 
-- Build and run via Docker Compose if you prefer a containerized setup.
+2. Add your YouTube API key to `.env`:
 
-## Useful Scripts (optional)
+   ```env
+   YOUTUBE_API_KEY=your_api_key_here
+   ```
+
+### Quick Start (Node)
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Run the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open [http://localhost:3000](http://localhost:3000)
+
+### Docker Setup (Alternative)
+
+If you prefer a containerized environment, use the provided Makefile commands:
+
+#### Development Mode
+
+1. **Start the container** (with logs):
+
+   ```bash
+   make up
+   ```
+
+   This builds and runs the app in development mode with hot-reload.
+
+2. **Start in background** (silent mode):
+
+   ```bash
+   make up-silent
+   ```
+
+3. **View logs**:
+
+   ```bash
+   make logs
+   ```
+
+4. **Stop the container**:
+
+   ```bash
+   make down
+   ```
+
+5. **Restart the container**:
+
+   ```bash
+   make restart
+   ```
+
+6. **Access container shell**:
+
+   ```bash
+   make shell
+   ```
+### Other Development Tools
+
+- **Open Storybook**:
+
+  ```bash
+  npm run storybook
+  ```
+
+- **Run tests**:
+
+  ```bash
+  npm test                  # Unit tests
+  npm run test:coverage     # With coverage
+  npm run test:mutation     # Mutation testing
+  npx playwright test       # E2E tests
+  ```
+
+## Useful Scripts
 
 - `npm run dev` — Start Next.js in dev mode
 - `npm run build` / `npm start` — Build and serve
@@ -131,3 +223,12 @@ Docker (optional)
 - `npm run test:mutation` — Mutation testing (Stryker)
 - `npm run commit:create` — Create a Conventional Commit interactively
 
+## O que falta
+
+- [ ] Implementar user auth/register
+- [ ] Implementar video upload
+- [ ] Implementar MSW
+- [ ] Implementar testes E2E com Playwright
+- [ ] Implementar testes de mutação com Stryker
+- [ ] Verificar error boundaries
+- [ ] 
