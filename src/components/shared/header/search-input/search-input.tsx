@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 
 import { Search, Clock } from 'lucide-react'
@@ -81,7 +83,7 @@ export const SearchInput = ({
           type="submit"
           variant="outline"
           size="icon"
-          className="rounded-l-none border-l-0 h-9"
+          className="rounded-l-none border-l-0 h-9 cursor-pointer"
           aria-label="Search"
         >
           <Search className="w-4 h-4" />
