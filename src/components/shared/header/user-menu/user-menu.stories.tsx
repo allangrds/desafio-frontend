@@ -5,6 +5,7 @@ import { UserMenu } from './user-menu'
 const meta = {
   title: 'Components/Header/UserMenu',
   component: UserMenu,
+  tags: ['autodocs'],
 } satisfies Meta<typeof UserMenu>
 
 export default meta

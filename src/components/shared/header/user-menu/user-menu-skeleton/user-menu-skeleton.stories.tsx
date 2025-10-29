@@ -5,6 +5,7 @@ import { UserMenuSkeleton } from './user-menu-skeleton'
 const meta = {
   title: 'Components/Header/UserMenuSkeleton',
   component: UserMenuSkeleton,
+  tags: ['autodocs'],
 } satisfies Meta<typeof UserMenuSkeleton>
 
 export default meta
