@@ -1,5 +1,10 @@
 import { google } from 'googleapis'
-import type { Video, YouTubeVideoItem, GetVideosParams } from '@/types/youtube'
+import type {
+  Video,
+  YouTubeVideoItem,
+  GetVideosParams,
+  SearchVideosParams,
+} from '@/types/youtube'
 
 const youtube = google.youtube({
   version: 'v3',
@@ -60,4 +65,43 @@ export const getVideos = async (
 
   const items = (response.data.items || []) as YouTubeVideoItem[]
   return items.map(transformYouTubeVideo)
+}
+
+/**
+ * Pesquisa vídeos do YouTube por termo de busca
+ */
+export const searchVideos = async (
+  query: string,
+  params: SearchVideosParams = {},
+): Promise<Video[]> => {
+  const { maxResults = 10, regionCode = 'US' } = params
+
+  // Primeiro, busca os vídeos
+  const searchResponse = await youtube.search.list({
+    part: ['snippet'],
+    q: query,
+    type: ['video'],
+    maxResults,
+    regionCode,
+  })
+
+  const searchItems = searchResponse.data.items || []
+
+  if (searchItems.length === 0) {
+    return []
+  }
+
+  // Extrai os IDs dos vídeos
+  const videoIds = searchItems
+    .map((item) => item.id?.videoId)
+    .filter((id): id is string => !!id)
+
+  // Busca detalhes completos dos vídeos (views, duration, etc)
+  const videosResponse = await youtube.videos.list({
+    part: ['snippet', 'statistics', 'contentDetails'],
+    id: videoIds,
+  })
+
+  const videoItems = (videosResponse.data.items || []) as YouTubeVideoItem[]
+  return videoItems.map(transformYouTubeVideo)
 }

@@ -22,7 +22,7 @@ export const HomeView = ({
         onSearch={header.onSearch}
         onAddSearch={header.onAddSearch}
         initialQuery={header.initialQuery}
-        recentSearches={[]}
+        recentSearches={header.recentSearches || []}
         SignInRegisterButtons={header.SignInRegisterButtons}
       />
       <section className="w-full py-10 flex flex-col gap-5 px-4 md:gap-7 md:px-20">

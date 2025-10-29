@@ -63,4 +63,21 @@ describe('OtherVideos', () => {
     expect(getVideos).toHaveBeenCalledTimes(1)
     expect(screen.getByText('No videos found')).toBeDefined()
   })
+
+  it('should render NoVideos component when API call fails', async () => {
+    mockGetVideos.mockRejectedValue(new Error('Network error'))
+
+    render(await OtherVideos())
+
+    expect(getVideos).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('No videos found')).toBeDefined()
+  })
+
+  it('should handle connection issues gracefully', async () => {
+    mockGetVideos.mockRejectedValue(new Error('Failed to fetch'))
+
+    render(await OtherVideos())
+
+    expect(screen.getByText('No videos found')).toBeDefined()
+  })
 })

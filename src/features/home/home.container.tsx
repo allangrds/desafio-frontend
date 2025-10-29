@@ -14,7 +14,7 @@ export const HomeContainer = ({
   featuredVideosSlot,
   otherVideosSlot,
 }: HomeContainerProps) => {
-  const { initialQuery, onAddSearch, onSearch } = useHomeLogic()
+  const { initialQuery, recentSearches, onAddSearch, onSearch } = useHomeLogic()
 
   return (
     <HomeView
@@ -22,6 +22,7 @@ export const HomeContainer = ({
         onSearch,
         onAddSearch,
         initialQuery,
+        recentSearches,
         SignInRegisterButtons: userMenuSlot,
       }}
       featuredVideos={{

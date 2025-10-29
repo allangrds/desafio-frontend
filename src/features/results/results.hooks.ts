@@ -1,11 +1,14 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useSearchHistoryStore } from '@/stores/search-history.store'
 
-export const useHomeLogic = () => {
+export const useResultsLogic = () => {
+  const searchParams = useSearchParams()
   const router = useRouter()
   const { searches, addSearch } = useSearchHistoryStore()
+
+  const searchQuery = searchParams.get('search') || ''
 
   const onSearch = (query: string) => {
     router.push(`/results?search=${encodeURIComponent(query)}`)
@@ -16,9 +19,9 @@ export const useHomeLogic = () => {
   }
 
   return {
+    searchQuery,
+    recentSearches: searches,
     onSearch,
     onAddSearch,
-    initialQuery: '',
-    recentSearches: searches,
   }
 }

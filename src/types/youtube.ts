@@ -82,3 +82,11 @@ export type GetVideosParams = {
   regionCode?: string
   videoCategoryId?: string
 }
+
+/**
+ * Parâmetros para pesquisar vídeos
+ */
+export type SearchVideosParams = {
+  maxResults?: number
+  regionCode?: string
+}
