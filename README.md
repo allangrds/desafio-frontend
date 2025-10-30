@@ -9,7 +9,9 @@ A practical implementation of the Bycoders frontend challenge: a video platform 
 - [Technical Decisions](#technical-decisions)
 - [Getting Started](#getting-started)
 - [Useful Scripts](#useful-scripts)
+- [Running CI locally with Act](#running-ci-locally-with-act)
 - [O que falta](#o-que-falta)
+
 
 ## Tech Stack
 
@@ -231,4 +233,39 @@ If you prefer a containerized environment, use the provided Makefile commands:
 - [ ] Implementar testes E2E com Playwright
 - [ ] Implementar testes de mutação com Stryker
 - [ ] Verificar error boundaries
-- [ ] 
+- [ ] Implementar no CI/CD a parte de acessibilidade
+- [ ] Implementar no CI/CD a parte de performance com lighthouse
+
+## Running CI locally with Act
+
+You can test GitHub Actions workflows locally using the tool [Act](https://github.com/nektos/act). This allows you to simulate CI jobs in your environment, making it easier to debug and validate before pushing to GitHub.
+
+### Installing Act
+
+If you use Homebrew:
+
+```bash
+brew install act
+```
+
+Or via script:
+
+```bash
+curl -s https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+```
+
+Make sure you have Docker installed, as Act uses containers to simulate GitHub runners.
+
+### Running the Pull Request workflow
+
+To run the pull request workflow:
+
+```bash
+act pull_request
+```
+
+To run a specific job (example: accessibility):
+
+```bash
+act -j accessibility
+```

@@ -1,0 +1,133 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  install:
+    name: Install dependencies (cache)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+  commitlint:
+    name: Commitlint (Conventional Commits)
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run commitlint action
+        uses: wagoid/commitlint-github-action@v4
+
+  typecheck:
+    name: Type check
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Run TypeScript type check
+        run: npm run type-check
+
+  build:
+    name: Build
+    needs: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Build
+        run: npm run build
+
+  test:
+    name: Unit & Integration Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Run unit & integration tests
+        run: npm test -- --runInBand
+
+  security-audit:
+    name: Security (npm audit)
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Run npm audit (fail on high)
+        run: npm audit --audit-level=high || true

@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "type-check": "tsc --noEmit",
     "lint": "biome check",
     "format": "biome format --write",
     "test": "jest",
@@ -45,6 +46,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@biomejs/biome": "2.2.0",
     "@chromatic-com/storybook": "^4.1.1",
     "@commitlint/cli": "^20.1.0",
