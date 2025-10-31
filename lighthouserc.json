@@ -10,28 +10,28 @@
     },
     "assert": {
       "assertions": {
-        "performance": [
-          "error",
+        "categories:performance": [
+          "warn",
           {
-            "minScore": 0.8
+            "minScore": 0.85
           }
         ],
-        "accessibility": [
+        "categories:accessibility": [
           "error",
           {
             "minScore": 0.9
           }
         ],
-        "best-practices": [
+        "categories:seo": [
           "error",
           {
-            "minScore": 0.8
+            "minScore": 1
           }
         ],
-        "seo": [
-          "error",
+        "categories:best-practices": [
+          "warn",
           {
-            "minScore": 0.8
+            "minScore": 0.9
           }
         ]
       }

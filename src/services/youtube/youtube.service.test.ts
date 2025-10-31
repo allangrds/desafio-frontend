@@ -29,7 +29,7 @@ const mockYouTubeResponse = {
           channelTitle: 'Test Channel 1',
           thumbnails: {
             high: {
-              url: 'https://example.com/thumb1.jpg',
+              url: 'https://img.youtube.com/thumb1.jpg',
               width: 480,
               height: 360,
             },
@@ -51,7 +51,7 @@ const mockYouTubeResponse = {
           channelTitle: 'Test Channel 2',
           thumbnails: {
             medium: {
-              url: 'https://example.com/thumb2.jpg',
+              url: 'https://img.youtube.com/thumb2.jpg',
               width: 320,
               height: 180,
             },
@@ -73,7 +73,7 @@ const mockYouTubeResponse = {
           channelTitle: 'Test Channel 3',
           thumbnails: {
             high: {
-              url: 'https://example.com/thumb3.jpg',
+              url: 'https://img.youtube.com/thumb3.jpg',
               width: 480,
               height: 360,
             },
@@ -152,7 +152,7 @@ describe('YouTubeService', () => {
 
   describe('error handling', () => {
     it('should handle API errors gracefully', async () => {
-      mockList.mockRejectedValueOnce(new Error('API Error'))
+      mockList.mockRejectedValue(new Error('API Error'))
 
       await expect(getVideos()).rejects.toThrow()
     })
@@ -169,7 +169,7 @@ describe('YouTubeService', () => {
               channelTitle: 'Channel 1',
               thumbnails: {
                 high: {
-                  url: 'https://example.com/search1.jpg',
+                  url: 'https://img.youtube.com/search1.jpg',
                   width: 480,
                   height: 360,
                 },
@@ -183,7 +183,7 @@ describe('YouTubeService', () => {
               channelTitle: 'Channel 2',
               thumbnails: {
                 medium: {
-                  url: 'https://example.com/search2.jpg',
+                  url: 'https://img.youtube.com/search2.jpg',
                   width: 320,
                   height: 180,
                 },
@@ -204,7 +204,7 @@ describe('YouTubeService', () => {
               channelTitle: 'Channel 1',
               thumbnails: {
                 high: {
-                  url: 'https://example.com/search1.jpg',
+                  url: 'https://img.youtube.com/search1.jpg',
                   width: 480,
                   height: 360,
                 },
@@ -226,7 +226,7 @@ describe('YouTubeService', () => {
               channelTitle: 'Channel 2',
               thumbnails: {
                 medium: {
-                  url: 'https://example.com/search2.jpg',
+                  url: 'https://img.youtube.com/search2.jpg',
                   width: 320,
                   height: 180,
                 },
@@ -305,7 +305,7 @@ describe('YouTubeService', () => {
     })
 
     it('should handle search API errors', async () => {
-      mockSearch.mockRejectedValueOnce(new Error('Search API Error'))
+      mockSearch.mockRejectedValue(new Error('Search API Error'))
 
       await expect(searchVideos('test')).rejects.toThrow()
     })

@@ -13,6 +13,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:mutation": "stryker run",
+    "lighthouse:ci": "lhci autorun",
     "commit:create": "cz",
     "commit:lint": "git log --pretty=format:'%s' --no-merges | npx commitlint",
     "storybook": "storybook dev -p 6006",
@@ -48,6 +49,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@biomejs/biome": "2.2.0",
+    "@lhci/cli": "^0.14.0",
     "@chromatic-com/storybook": "^4.1.1",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",

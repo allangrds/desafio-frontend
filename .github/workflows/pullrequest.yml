@@ -131,3 +131,28 @@ jobs:
 
       - name: Run npm audit (fail on high)
         run: npm audit --audit-level=high || true
+
+  lighthouse:
+    name: Lighthouse CI (Performance)
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run Lighthouse CI
+        run: npm run lighthouse:ci

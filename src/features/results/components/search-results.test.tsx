@@ -17,7 +17,7 @@ describe('SearchResults', () => {
       {
         id: 'video1',
         title: 'React Hooks Tutorial',
-        thumbnailUrl: 'https://example.com/thumb1.jpg',
+        thumbnailUrl: 'https://img.youtube.com/thumb1.jpg',
         channelName: 'Tech Channel',
         views: 1000,
         duration: '10:30',
@@ -26,7 +26,7 @@ describe('SearchResults', () => {
       {
         id: 'video2',
         title: 'Advanced React Hooks',
-        thumbnailUrl: 'https://example.com/thumb2.jpg',
+        thumbnailUrl: 'https://img.youtube.com/thumb2.jpg',
         channelName: 'Dev Channel',
         views: 2000,
         duration: '15:45',
@@ -60,28 +60,34 @@ describe('SearchResults', () => {
   })
 
   it('should render NoVideos when API call fails', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockSearchVideos.mockRejectedValue(new Error('Network error'))
 
     const Component = await SearchResults({ searchQuery: 'test query' })
 
     expect(mockSearchVideos).toHaveBeenCalledWith('test query')
     expect(Component).toBeDefined()
+    jest.restoreAllMocks()
   })
 
   it('should handle no internet connection gracefully', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockSearchVideos.mockRejectedValue(new Error('Failed to fetch'))
 
     const Component = await SearchResults({ searchQuery: 'react' })
 
     expect(mockSearchVideos).toHaveBeenCalledWith('react')
     expect(Component).toBeDefined()
+    jest.restoreAllMocks()
   })
 
   it('should handle API timeout', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockSearchVideos.mockRejectedValue(new Error('Request timeout'))
 
     const Component = await SearchResults({ searchQuery: 'typescript' })
 
     expect(Component).toBeDefined()
+    jest.restoreAllMocks()
   })
 })
