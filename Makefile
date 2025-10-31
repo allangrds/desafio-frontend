@@ -1,4 +1,4 @@
-.PHONY: up down build run logs restart shell
+.PHONY: up down build test run logs restart shell
 
 up:
 	@echo "🚀 Subindo container Next.js..."
@@ -12,13 +12,9 @@ down:
 	@echo "🧹 Derrubando containers..."
 	docker compose down
 
-build:
-	@echo "🏗️ Buildando imagem de produção..."
-	docker build -t bycoders-frontend-challenge .
-
-run:
-	@echo "🚀 Rodando imagem de produção..."
-	docker run -p $$(grep ^PORT .env | cut -d '=' -f2):$$(grep ^PORT .env | cut -d '=' -f2) --env-file .env bycoders-frontend-challenge
+test:
+	@echo "🧪 Rodando testes..."
+	docker compose exec web npm run test
 
 logs:
 	docker compose logs -f

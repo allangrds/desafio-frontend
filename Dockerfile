@@ -5,6 +5,7 @@ FROM node:22.21.0-alpine AS base
 RUN apk add --no-cache g++ make py3-pip libc6-compat
 WORKDIR /app
 COPY package*.json ./
+RUN npm install -D ts-node typescript
 RUN npm install
 
 ##############################

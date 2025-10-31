@@ -17,7 +17,7 @@ describe('SearchResults', () => {
       {
         id: 'video1',
         title: 'React Hooks Tutorial',
-        thumbnailUrl: 'https://example.com/thumb1.jpg',
+        thumbnailUrl: 'https://img.youtube.com/thumb1.jpg',
         channelName: 'Tech Channel',
         views: 1000,
         duration: '10:30',
@@ -26,7 +26,7 @@ describe('SearchResults', () => {
       {
         id: 'video2',
         title: 'Advanced React Hooks',
-        thumbnailUrl: 'https://example.com/thumb2.jpg',
+        thumbnailUrl: 'https://img.youtube.com/thumb2.jpg',
         channelName: 'Dev Channel',
         views: 2000,
         duration: '15:45',

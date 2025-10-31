@@ -6,7 +6,7 @@ import { VideoPreview } from './video-preview'
 describe('VideoPreview', () => {
   const mockProps = {
     title: 'React 19 New Features',
-    thumbnailUrl: 'https://example.com/thumbnail.jpg',
+    thumbnailUrl: 'https://img.youtube.com/thumbnail.jpg',
     channelName: 'Tech Channel',
     views: 1500000,
     duration: '12:34',
