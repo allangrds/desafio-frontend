@@ -60,28 +60,34 @@ describe('SearchResults', () => {
   })
 
   it('should render NoVideos when API call fails', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockSearchVideos.mockRejectedValue(new Error('Network error'))
 
     const Component = await SearchResults({ searchQuery: 'test query' })
 
     expect(mockSearchVideos).toHaveBeenCalledWith('test query')
     expect(Component).toBeDefined()
+    jest.restoreAllMocks()
   })
 
   it('should handle no internet connection gracefully', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockSearchVideos.mockRejectedValue(new Error('Failed to fetch'))
 
     const Component = await SearchResults({ searchQuery: 'react' })
 
     expect(mockSearchVideos).toHaveBeenCalledWith('react')
     expect(Component).toBeDefined()
+    jest.restoreAllMocks()
   })
 
   it('should handle API timeout', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockSearchVideos.mockRejectedValue(new Error('Request timeout'))
 
     const Component = await SearchResults({ searchQuery: 'typescript' })
 
     expect(Component).toBeDefined()
+    jest.restoreAllMocks()
   })
 })

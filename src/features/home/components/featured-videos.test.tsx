@@ -65,19 +65,23 @@ describe('FeaturedVideos', () => {
   })
 
   it('should render NoVideos component when API call fails', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockGetVideos.mockRejectedValue(new Error('Network error'))
 
     render(await FeaturedVideos())
 
     expect(getVideos).toHaveBeenCalledTimes(1)
     expect(screen.getByText('No videos found')).toBeDefined()
+    jest.restoreAllMocks()
   })
 
   it('should handle API timeout gracefully', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockGetVideos.mockRejectedValue(new Error('Request timeout'))
 
     render(await FeaturedVideos())
 
     expect(screen.getByText('No videos found')).toBeDefined()
+    jest.restoreAllMocks()
   })
 })

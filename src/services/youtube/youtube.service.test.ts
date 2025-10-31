@@ -152,7 +152,7 @@ describe('YouTubeService', () => {
 
   describe('error handling', () => {
     it('should handle API errors gracefully', async () => {
-      mockList.mockRejectedValueOnce(new Error('API Error'))
+      mockList.mockRejectedValue(new Error('API Error'))
 
       await expect(getVideos()).rejects.toThrow()
     })
@@ -305,7 +305,7 @@ describe('YouTubeService', () => {
     })
 
     it('should handle search API errors', async () => {
-      mockSearch.mockRejectedValueOnce(new Error('Search API Error'))
+      mockSearch.mockRejectedValue(new Error('Search API Error'))
 
       await expect(searchVideos('test')).rejects.toThrow()
     })

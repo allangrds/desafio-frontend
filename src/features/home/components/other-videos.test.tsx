@@ -65,19 +65,23 @@ describe('OtherVideos', () => {
   })
 
   it('should render NoVideos component when API call fails', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockGetVideos.mockRejectedValue(new Error('Network error'))
 
     render(await OtherVideos())
 
     expect(getVideos).toHaveBeenCalledTimes(1)
     expect(screen.getByText('No videos found')).toBeDefined()
+    jest.restoreAllMocks()
   })
 
   it('should handle connection issues gracefully', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
     mockGetVideos.mockRejectedValue(new Error('Failed to fetch'))
 
     render(await OtherVideos())
 
     expect(screen.getByText('No videos found')).toBeDefined()
+    jest.restoreAllMocks()
   })
 })
