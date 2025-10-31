@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       new URL('https://picsum.photos/**'),
       new URL('https://i.ytimg.com/**'),
       new URL('https://img.youtube.com/**'),
+      new URL('https://lh3.googleusercontent.com/**'),
     ],
   },
   // Increase body size limit for video uploads
