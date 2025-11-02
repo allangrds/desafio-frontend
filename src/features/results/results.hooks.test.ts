@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
-import { useSearchHistoryStore } from '../../stores/search-history.store'
+import { useSearchHistoryStore } from '../../stores/search-history'
 
 import { useResultsLogic } from './results.hooks'
 
@@ -12,7 +12,7 @@ jest.mock('next/navigation', () => ({
 }))
 
 // Mock search history store
-jest.mock('../../stores/search-history.store', () => ({
+jest.mock('../../stores/search-history', () => ({
   useSearchHistoryStore: jest.fn(),
 }))
 
