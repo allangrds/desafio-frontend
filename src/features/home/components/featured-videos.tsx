@@ -1,10 +1,17 @@
 import { VideoList } from '@/components/shared/video-list'
 import { NoVideos } from '@/components/shared/no-videos'
-import { getVideos } from '@/services/youtube/youtube.service'
+import { getApiUrl } from '@/lib/api-url'
+import type { Video } from '@/types/youtube'
 
 export const FeaturedVideos = async () => {
   try {
-    const featuredVideos = await getVideos({ videoCategoryId: '28' })
+    const response = await fetch(getApiUrl('/api/videos?category=28'))
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch featured videos')
+    }
+
+    const featuredVideos: Video[] = await response.json()
 
     if (featuredVideos.length === 0) {
       return <NoVideos />

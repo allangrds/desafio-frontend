@@ -5,6 +5,7 @@ import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
 
+// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
 const Error = ({
   error,
   reset,

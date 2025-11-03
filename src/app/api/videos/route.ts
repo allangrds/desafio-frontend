@@ -2,9 +2,46 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 import { getSession } from '@/lib/session'
-import { uploadVideo } from '@/services/youtube/youtube.service'
+import {
+  uploadVideo,
+  getVideos,
+  searchVideos,
+} from '@/services/youtube/youtube.service'
 
 import type { VideoPrivacy } from '@/types/youtube'
+
+export const GET = async (request: NextRequest) => {
+  try {
+    const { searchParams } = new URL(request.url)
+    const search = searchParams.get('search')
+    const category = searchParams.get('category')
+    const maxResults = searchParams.get('maxResults')
+
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    let videos: any
+
+    if (search !== null) {
+      videos = await searchVideos(search)
+    } else if (category) {
+      videos = await getVideos({
+        videoCategoryId: category,
+        maxResults: maxResults ? Number(maxResults) : undefined,
+      })
+    } else {
+      videos = await getVideos({
+        maxResults: maxResults ? Number(maxResults) : undefined,
+      })
+    }
+
+    return NextResponse.json(videos)
+  } catch (error) {
+    console.error('Error fetching videos:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch videos' },
+      { status: 500 },
+    )
+  }
+}
 
 export const POST = async (request: NextRequest) => {
   try {

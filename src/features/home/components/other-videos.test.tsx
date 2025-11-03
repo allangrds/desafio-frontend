@@ -1,10 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { OtherVideos } from './other-videos'
-import { getVideos } from '../../../services/youtube/youtube.service'
 
-jest.mock('../../../services/youtube/youtube.service', () => ({
-  getVideos: jest.fn(),
-}))
+global.fetch = jest.fn()
 
 const mockVideos = [
   {
@@ -36,48 +33,59 @@ const mockVideos = [
   },
 ]
 
-const mockGetVideos = getVideos as jest.MockedFunction<typeof getVideos>
+const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
 
 describe('OtherVideos', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  it('should render popular videos from YouTube service', async () => {
-    mockGetVideos.mockResolvedValue(mockVideos)
+  it('should render popular videos from API', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockVideos,
+    } as Response)
 
     render(await OtherVideos())
 
-    expect(getVideos).toHaveBeenCalledTimes(1)
-    expect(getVideos).toHaveBeenCalledWith({ maxResults: 6 })
+    expect(fetch).toHaveBeenCalledTimes(1)
+    expect(fetch).toHaveBeenCalledWith(
+      'http://localhost:3000/api/videos?maxResults=6',
+    )
     expect(screen.getByText('Popular Video 1')).toBeDefined()
     expect(screen.getByText('Popular Video 2')).toBeDefined()
     expect(screen.getByText('Popular Video 3')).toBeDefined()
   })
 
   it('should render NoVideos component when no videos are returned', async () => {
-    mockGetVideos.mockResolvedValue([])
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response)
 
     render(await OtherVideos())
 
-    expect(getVideos).toHaveBeenCalledTimes(1)
+    expect(fetch).toHaveBeenCalledTimes(1)
     expect(screen.getByText('No videos found')).toBeDefined()
   })
 
   it('should render NoVideos component when API call fails', async () => {
     jest.spyOn(console, 'error').mockImplementation(() => {})
-    mockGetVideos.mockRejectedValue(new Error('Network error'))
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+    } as Response)
 
     render(await OtherVideos())
 
-    expect(getVideos).toHaveBeenCalledTimes(1)
+    expect(fetch).toHaveBeenCalledTimes(1)
     expect(screen.getByText('No videos found')).toBeDefined()
     jest.restoreAllMocks()
   })
 
   it('should handle connection issues gracefully', async () => {
     jest.spyOn(console, 'error').mockImplementation(() => {})
-    mockGetVideos.mockRejectedValue(new Error('Failed to fetch'))
+    mockFetch.mockRejectedValue(new Error('Failed to fetch'))
 
     render(await OtherVideos())
 

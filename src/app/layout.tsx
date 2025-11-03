@@ -8,7 +8,7 @@ const geist = Geist({
 })
 
 export const metadata: Metadata = {
-  title: 'Frontend Challenge | YouTube Clone',
+  title: 'YouTube Clone',
   description:
     'A YouTube clone built with Next.js, TypeScript, and Tailwind CSS.',
 }
