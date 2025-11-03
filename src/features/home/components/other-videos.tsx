@@ -1,12 +1,17 @@
 import { VideoList } from '@/components/shared/video-list'
 import { NoVideos } from '@/components/shared/no-videos'
-import { getVideos } from '@/services/youtube/youtube.service'
+import { getApiUrl } from '@/lib/api-url'
+import type { Video } from '@/types/youtube'
 
 export const OtherVideos = async () => {
   try {
-    const popularVideos = await getVideos({
-      maxResults: 6,
-    })
+    const response = await fetch(getApiUrl('/api/videos?maxResults=6'))
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch popular videos')
+    }
+
+    const popularVideos: Video[] = await response.json()
 
     if (popularVideos.length === 0) {
       return <NoVideos />

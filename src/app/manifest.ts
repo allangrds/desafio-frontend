@@ -1,10 +1,10 @@
 import type { MetadataRoute } from 'next'
 
-export default function manifest(): MetadataRoute.Manifest {
+const manifest = (): MetadataRoute.Manifest => {
   return {
-    name: 'Next.js App',
-    short_name: 'Next.js App',
-    description: 'Next.js App',
+    name: 'Youtube Clone',
+    short_name: 'Youtube clone',
+    description: 'Youtube clone',
     start_url: '/',
     display: 'standalone',
     background_color: '#fff',
@@ -18,3 +18,5 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
   }
 }
+
+export default manifest

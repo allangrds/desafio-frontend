@@ -16,14 +16,12 @@ describe('Header', () => {
     const onClickSignIn = jest.fn()
     const onClickRegister = jest.fn()
     const onLogout = jest.fn()
-    const tokens = undefined
     const user = undefined
     const SignInRegisterButtons = (
       <UserMenu
         onClickSignIn={onClickSignIn}
         onClickRegister={onClickRegister}
         onLogout={onLogout}
-        tokens={tokens}
         user={user}
       />
     )
@@ -61,9 +59,6 @@ describe('Header', () => {
     const onClickSignIn = jest.fn()
     const onClickRegister = jest.fn()
     const onLogout = jest.fn()
-    const tokens = {
-      accessToken: 'mockAccess',
-    }
     const user = {
       name: 'John Doe',
       picture: 'https://via.placeholder.com/150',
@@ -75,7 +70,6 @@ describe('Header', () => {
         onClickSignIn={onClickSignIn}
         onClickRegister={onClickRegister}
         onLogout={onLogout}
-        tokens={tokens}
         user={user}
       />
     )

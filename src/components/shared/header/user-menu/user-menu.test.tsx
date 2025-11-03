@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { UserMenu } from './user-menu'
 
 describe('UserMenu', () => {
-  it('should render Sign In and Register buttons when no tokens or user', () => {
+  it('should render Sign In and Register buttons when no user', () => {
     const mockOnClickSignIn = jest.fn()
     const mockOnClickRegister = jest.fn()
     const mockOnLogout = jest.fn()
@@ -26,7 +26,7 @@ describe('UserMenu', () => {
     expect(registerButton).toBeDefined()
   })
 
-  it('should render user avatar and dropdown menu when tokens and user are provided', async () => {
+  it('should render user avatar and dropdown menu when user is provided', async () => {
     const mockOnClickSignIn = jest.fn()
     const mockOnClickRegister = jest.fn()
     const mockOnLogout = jest.fn()
@@ -38,16 +38,11 @@ describe('UserMenu', () => {
       channelTitle: "Jane's Channel",
     }
 
-    const tokens = {
-      accessToken: 'fake-access-token',
-    }
-
     render(
       <UserMenu
         onClickSignIn={mockOnClickSignIn}
         onClickRegister={mockOnClickRegister}
         onLogout={mockOnLogout}
-        tokens={tokens}
         user={user}
       />,
     )

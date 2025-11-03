@@ -1,11 +1,4 @@
-/**
- * Tipos para integração com YouTube Data API v3
- */
-
-/**
- * Representa um vídeo formatado para uso nos componentes da aplicação
- * Compatível com VideoPreviewProps
- */
+/* My component video type */
 export type Video = {
   id: string
   title: string
@@ -16,9 +9,7 @@ export type Video = {
   href: string
 }
 
-/**
- * Snippet de vídeo retornado pela YouTube API
- */
+/* Youtube's API video snippet */
 export type YouTubeVideoSnippet = {
   title: string
   description: string
@@ -33,25 +24,19 @@ export type YouTubeVideoSnippet = {
   publishedAt: string
 }
 
-/**
- * Estatísticas de um vídeo do YouTube
- */
+/* Youtube's API video statistics */
 export type YouTubeVideoStatistics = {
   viewCount: string
   likeCount: string
   commentCount: string
 }
 
-/**
- * Detalhes de conteúdo de um vídeo do YouTube
- */
+/* Youtube's API video content details */
 export type YouTubeVideoContentDetails = {
   duration: string // Formato ISO 8601 (ex: PT15M30S)
 }
 
-/**
- * Item de vídeo retornado pela YouTube API
- */
+/* Youtube's API video item */
 export type YouTubeVideoItem = {
   kind: 'youtube#video'
   id: string
@@ -60,9 +45,7 @@ export type YouTubeVideoItem = {
   contentDetails?: YouTubeVideoContentDetails
 }
 
-/**
- * Resposta da YouTube API para listagem de vídeos
- */
+/* Youtube's API response for video list */
 export type YouTubeApiResponse = {
   kind: 'youtube#videoListResponse'
   items: YouTubeVideoItem[]
@@ -74,19 +57,36 @@ export type YouTubeApiResponse = {
   prevPageToken?: string
 }
 
-/**
- * Parâmetros para buscar vídeos
- */
 export type GetVideosParams = {
   maxResults?: number
   regionCode?: string
   videoCategoryId?: string
 }
 
-/**
- * Parâmetros para pesquisar vídeos
- */
 export type SearchVideosParams = {
   maxResults?: number
   regionCode?: string
+}
+
+export type VideoPrivacy = 'public' | 'private' | 'unlisted'
+
+export type UploadVideoData = {
+  title: string
+  description?: string
+  privacy: VideoPrivacy
+  file: File
+}
+
+export type UploadedVideo = {
+  id: string
+  title: string
+  description: string
+  privacy: VideoPrivacy
+  url: string
+}
+
+export type UploadProgress = {
+  percentage: number
+  status: 'idle' | 'uploading' | 'processing' | 'complete' | 'error'
+  message?: string
 }

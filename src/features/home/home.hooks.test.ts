@@ -1,15 +1,15 @@
 import { renderHook } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
-import { useHomeLogic } from './home.hooks'
-import { useSearchHistoryStore } from '../../stores/search-history.store'
 
-// Mock next/navigation
+import { useSearchHistoryStore } from '../../stores/search-history'
+
+import { useHomeLogic } from './home.hooks'
+
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }))
 
-// Mock search history store
-jest.mock('../../stores/search-history.store', () => ({
+jest.mock('../../stores/search-history', () => ({
   useSearchHistoryStore: jest.fn(),
 }))
 
@@ -21,25 +21,20 @@ describe('useHomeLogic', () => {
   const mockAddSearch = jest.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
     mockUseRouter.mockReturnValue({
       push: mockPush,
     })
+  })
+
+  it('should return initialQuery and recentSearches as empty', () => {
     mockUseSearchHistoryStore.mockReturnValue({
       searches: ['react', 'typescript'],
       addSearch: mockAddSearch,
     })
-  })
 
-  it('should return initialQuery as empty string', () => {
     const { result } = renderHook(() => useHomeLogic())
 
     expect(result.current.initialQuery).toBe('')
-  })
-
-  it('should return recent searches from store', () => {
-    const { result } = renderHook(() => useHomeLogic())
-
     expect(result.current.recentSearches).toEqual(['react', 'typescript'])
   })
 

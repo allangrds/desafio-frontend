@@ -16,9 +16,6 @@ export type UserMenuProps = {
   onClickSignIn: () => void
   onClickRegister: () => void
   onLogout: () => void
-  tokens?: {
-    accessToken: string
-  }
   user?: {
     name: string
     picture: string
@@ -31,7 +28,6 @@ export const UserMenu = ({
   onClickSignIn,
   onClickRegister,
   onLogout,
-  tokens,
   user,
 }: UserMenuProps) => {
   const initials = user?.name
@@ -42,7 +38,7 @@ export const UserMenu = ({
 
   return (
     <div className="h-10 w-full max-w-[200px] flex items-center justify-end">
-      {tokens && user ? (
+      {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="cursor-pointer">
             <Button

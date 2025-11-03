@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useSearchHistoryStore } from '@/stores/search-history.store'
+import { useSearchHistoryStore } from '@/stores/search-history'
 
 export const useResultsLogic = () => {
   const searchParams = useSearchParams()

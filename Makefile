@@ -12,10 +12,6 @@ down:
 	@echo "🧹 Derrubando containers..."
 	docker compose down
 
-test:
-	@echo "🧪 Rodando testes..."
-	docker compose exec web npm run test
-
 logs:
 	docker compose logs -f
 

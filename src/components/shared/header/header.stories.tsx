@@ -48,7 +48,6 @@ export const WithProfile: Story = {
         onClickSignIn={() => console.log('Sign In clicked')}
         onClickRegister={() => console.log('Register clicked')}
         onLogout={() => console.log('Logout clicked')}
-        tokens={{ accessToken: 'fake-access-token' }}
         user={{
           name: 'John Doe',
           picture: 'https://via.placeholder.com/150',

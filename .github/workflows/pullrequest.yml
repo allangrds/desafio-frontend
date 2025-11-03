@@ -44,7 +44,7 @@ jobs:
       - name: Run commitlint action
         uses: wagoid/commitlint-github-action@v4
 
-  typecheck:
+  type-check:
     name: Type check
     needs: install
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
 
   build:
     name: Build
-    needs: typecheck
+    needs: type-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

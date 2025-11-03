@@ -1,11 +1,15 @@
 import type { MetadataRoute } from 'next'
 
-export default function robots(): MetadataRoute.Robots {
+import { getApiUrl } from '@/lib/api-url'
+
+const robots = (): MetadataRoute.Robots => {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://acme.com/sitemap.xml',
+    sitemap: `${getApiUrl('/sitemap.xml')}`,
   }
 }
+
+export default robots

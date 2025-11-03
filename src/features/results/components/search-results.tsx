@@ -1,6 +1,7 @@
 import { VideoList } from '@/components/shared/video-list'
 import { NoVideos } from '@/components/shared/no-videos'
-import { searchVideos } from '@/services/youtube/youtube.service'
+import { getApiUrl } from '@/lib/api-url'
+import type { Video } from '@/types/youtube'
 
 type SearchResultsProps = {
   searchQuery: string
@@ -8,7 +9,15 @@ type SearchResultsProps = {
 
 export const SearchResults = async ({ searchQuery }: SearchResultsProps) => {
   try {
-    const videos = await searchVideos(searchQuery)
+    const response = await fetch(
+      getApiUrl(`/api/videos?search=${encodeURIComponent(searchQuery)}`),
+    )
+
+    if (!response.ok) {
+      throw new Error('Failed to search videos')
+    }
+
+    const videos: Video[] = await response.json()
 
     if (videos.length === 0) {
       return <NoVideos />
