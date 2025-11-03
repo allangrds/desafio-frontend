@@ -1,4 +1,5 @@
-import { renderHook, act } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
+
 import { useSearchHistoryStore } from './search-history.store'
 
 describe('useSearchHistoryStore', () => {
@@ -121,16 +122,11 @@ describe('useSearchHistoryStore', () => {
   })
 
   it('should load searches from localStorage on initialization', () => {
-    // Limpa o estado atual
-    useSearchHistoryStore.persist.clearStorage()
-
     const initialData = {
       state: { searches: ['loaded search'] },
-      version: 0,
     }
     localStorage.setItem('search-history-storage', JSON.stringify(initialData))
 
-    // Force rehydration
     useSearchHistoryStore.persist.rehydrate()
 
     const { result } = renderHook(() => useSearchHistoryStore())

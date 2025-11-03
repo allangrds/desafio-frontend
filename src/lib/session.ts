@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import type { SessionData } from '@/types/auth'
 import { SESSION_OPTIONS } from '@/constants/session'
 
-export async function getSession(): Promise<SessionData | null> {
+export const getSession = async (): Promise<SessionData | null> => {
   const cookieStore = await cookies()
   const session = await getIronSession<SessionData>(
     cookieStore,
@@ -21,7 +21,7 @@ export async function getSession(): Promise<SessionData | null> {
   }
 }
 
-export async function saveSession(data: SessionData): Promise<void> {
+export const saveSession = async (data: SessionData): Promise<void> => {
   const cookieStore = await cookies()
   const session = await getIronSession<SessionData>(
     cookieStore,
@@ -34,7 +34,7 @@ export async function saveSession(data: SessionData): Promise<void> {
   await session.save()
 }
 
-export async function destroySession(): Promise<void> {
+export const destroySession = async (): Promise<void> => {
   const cookieStore = await cookies()
   const session = await getIronSession<SessionData>(
     cookieStore,

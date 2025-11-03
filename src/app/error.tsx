@@ -1,17 +1,18 @@
 'use client'
 
-import { useEffect } from 'react'
+import * as React from 'react'
+
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
 
-export default function Error({
+const Error = ({
   error,
   reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
-}) {
-  useEffect(() => {
+}) => {
+  React.useEffect(() => {
     // Log error for debugging (in production, send to monitoring service like Sentry)
     console.error('Application error:', error)
   }, [error])
@@ -33,3 +34,5 @@ export default function Error({
     </div>
   )
 }
+
+export default Error

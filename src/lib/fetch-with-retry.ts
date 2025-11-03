@@ -4,10 +4,10 @@ type RetryOptions = {
   backoff?: boolean
 }
 
-export async function fetchWithRetry<T>(
+export const fetchWithRetry = async <T>(
   fn: () => Promise<T>,
   options: RetryOptions = {},
-): Promise<T> {
+): Promise<T> => {
   const { maxRetries = 2, delay = 1000, backoff = true } = options
 
   let lastError: Error

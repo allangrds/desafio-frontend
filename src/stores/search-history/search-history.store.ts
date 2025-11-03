@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 
 const MAX_SEARCHES = 5
 
-type SearchHistoryState = {
+export type SearchHistoryState = {
   searches: string[]
   addSearch: (query: string) => void
   clearHistory: () => void
@@ -21,12 +21,10 @@ export const useSearchHistoryStore = create<SearchHistoryState>()(
         }
 
         set((state) => {
-          // Remove duplicata se existir
           const filteredSearches = state.searches.filter(
             (search) => search !== trimmedQuery,
           )
 
-          // Adiciona no início e limita a 5
           const newSearches = [trimmedQuery, ...filteredSearches].slice(
             0,
             MAX_SEARCHES,

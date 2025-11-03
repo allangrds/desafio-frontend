@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+const sitemap = (): MetadataRoute.Sitemap => {
   return [
     {
       url: 'https://acme.com',
@@ -22,3 +22,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 }
+
+export default sitemap

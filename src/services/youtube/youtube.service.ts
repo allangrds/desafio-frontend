@@ -1,11 +1,15 @@
+import { Readable } from 'stream'
 import { google } from 'googleapis'
+
+import { fetchWithRetry } from '@/lib/fetch-with-retry'
 import type {
   Video,
   YouTubeVideoItem,
   GetVideosParams,
   SearchVideosParams,
+  UploadedVideo,
+  VideoPrivacy,
 } from '@/types/youtube'
-import { fetchWithRetry } from '@/lib/fetch-with-retry'
 
 const youtube = google.youtube({
   version: 'v3',
@@ -16,9 +20,9 @@ const formatDuration = (isoDuration: string): string => {
   const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
   if (!match) return '0:00'
 
-  const hours = match[1] ? parseInt(match[1]) : 0
-  const minutes = match[2] ? parseInt(match[2]) : 0
-  const seconds = match[3] ? parseInt(match[3]) : 0
+  const hours = match[1] ? parseInt(match[1], 10) : 0
+  const minutes = match[2] ? parseInt(match[2], 10) : 0
+  const seconds = match[3] ? parseInt(match[3], 10) : 0
 
   if (hours > 0) {
     return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
@@ -63,23 +67,12 @@ export const getVideos = async (
   return items.map(transformYouTubeVideo)
 }
 
-/**
- * Pesquisa vídeos do YouTube por termo de busca
- *
- * @remarks
- * Performs a two-step process:
- * 1. Search for videos matching the query
- * 2. Fetch detailed information (views, duration) for found videos
- *
- * Both API calls use retry logic to handle temporary failures.
- */
 export const searchVideos = async (
   query: string,
   params: SearchVideosParams = {},
 ): Promise<Video[]> => {
   const { maxResults = 10, regionCode = 'US' } = params
 
-  // First, search for videos with retry logic
   const searchResponse = await fetchWithRetry(
     () =>
       youtube.search.list({
@@ -98,12 +91,10 @@ export const searchVideos = async (
     return []
   }
 
-  // Extract video IDs
   const videoIds = searchItems
     .map((item) => item.id?.videoId)
     .filter((id): id is string => !!id)
 
-  // Fetch detailed video information with retry logic
   const videosResponse = await fetchWithRetry(
     () =>
       youtube.videos.list({
@@ -115,4 +106,54 @@ export const searchVideos = async (
 
   const videoItems = (videosResponse.data.items || []) as YouTubeVideoItem[]
   return videoItems.map(transformYouTubeVideo)
+}
+
+export const uploadVideo = async (
+  accessToken: string,
+  file: File,
+  title: string,
+  description: string,
+  privacy: VideoPrivacy,
+): Promise<UploadedVideo> => {
+  const oauth2Client = new google.auth.OAuth2()
+  oauth2Client.setCredentials({ access_token: accessToken })
+
+  const youtube = google.youtube({
+    version: 'v3',
+    auth: oauth2Client,
+  })
+
+  const arrayBuffer = await file.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+  const stream = Readable.from(buffer)
+
+  const response = await youtube.videos.insert({
+    part: ['snippet', 'status'],
+    requestBody: {
+      snippet: {
+        title,
+        description,
+      },
+      status: {
+        privacyStatus: privacy,
+      },
+    },
+    media: {
+      body: stream,
+    },
+  })
+
+  const videoId = response.data.id || ''
+  const videoTitle = response.data.snippet?.title || title
+  const videoDescription = response.data.snippet?.description || description
+  const videoPrivacy = (response.data.status?.privacyStatus ||
+    privacy) as VideoPrivacy
+
+  return {
+    id: videoId,
+    title: videoTitle,
+    description: videoDescription,
+    privacy: videoPrivacy,
+    url: `https://www.youtube.com/watch?v=${videoId}`,
+  }
 }
