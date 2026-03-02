@@ -1,14 +1,14 @@
-import { Readable } from 'stream'
+import { Readable } from 'node:stream'
 import { google } from 'googleapis'
 
 import { fetchWithRetry } from '@/lib/fetch-with-retry'
 import type {
-  Video,
-  YouTubeVideoItem,
   GetVideosParams,
   SearchVideosParams,
   UploadedVideo,
+  Video,
   VideoPrivacy,
+  YouTubeVideoItem,
 } from '@/types/youtube'
 
 const youtube = google.youtube({
@@ -40,7 +40,7 @@ const transformYouTubeVideo = (item: YouTubeVideoItem): Video => {
     thumbnailUrl:
       snippet.thumbnails.high?.url || snippet.thumbnails.medium?.url || '',
     channelName: snippet.channelTitle,
-    views: statistics ? parseInt(statistics.viewCount) : 0,
+    views: statistics ? parseInt(statistics.viewCount, 10) : 0,
     duration: contentDetails ? formatDuration(contentDetails.duration) : '0:00',
     href: `https://www.youtube.com/watch?v=${id}`,
   }

@@ -2,9 +2,8 @@ import * as React from 'react'
 
 import { UserMenuSkeleton } from '@/components/shared/header/user-menu/user-menu-skeleton'
 import { VideoListSkeleton } from '@/components/shared/video-list/video-list-skeleton'
-
-import { UserMenu } from './components/user-menu'
 import { SearchResults } from './components/search-results'
+import { UserMenu } from './components/user-menu'
 import { ResultsContainer } from './results.container'
 
 export type ResultsProps = {

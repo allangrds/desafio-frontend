@@ -1,7 +1,7 @@
 'use client'
 
-import { ResultsView } from './results.view'
 import { useResultsLogic } from './results.hooks'
+import { ResultsView } from './results.view'
 
 type ResultsContainerProps = {
   userMenuSlot: React.ReactNode

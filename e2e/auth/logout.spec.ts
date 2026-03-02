@@ -1,4 +1,4 @@
-import { test, expect } from '../../e2e/fixtures/auth'
+import { expect, test } from '../../e2e/fixtures/auth'
 
 test.describe('Logout Flow', () => {
   test('trigger logout → user redirected to home page', async ({

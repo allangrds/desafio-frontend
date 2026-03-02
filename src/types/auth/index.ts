@@ -1,1 +1,1 @@
-export type { SessionData, User, Tokens } from './auth.type'
+export type { SessionData, Tokens, User } from './auth.type'

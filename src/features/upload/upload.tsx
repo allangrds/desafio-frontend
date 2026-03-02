@@ -1,14 +1,13 @@
-import * as React from 'react'
-import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import { getIronSession } from 'iron-session'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import * as React from 'react'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { SESSION_OPTIONS } from '@/constants/session'
 import type { SessionData } from '@/types/auth'
-
-import { UploadContainer } from './upload.container'
 import { UserMenu } from './components/user-menu'
+import { UploadContainer } from './upload.container'
 
 const UploadSkeleton = () => (
   <div className="container mx-auto px-4 py-8 max-w-2xl">
@@ -30,7 +29,7 @@ export const Upload = async () => {
     SESSION_OPTIONS,
   )
 
-  if (!session.user || !session.tokens) {
+  if (!(session.user && session.tokens)) {
     redirect('/auth/signin')
   }
 

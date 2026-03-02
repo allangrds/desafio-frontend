@@ -1,8 +1,8 @@
 'use client'
 
-import { UploadProgress as UploadProgressType } from '@/types/youtube'
-import { Progress } from '@/components/ui/progress'
 import { Card, CardContent } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import type { UploadProgress as UploadProgressType } from '@/types/youtube'
 
 type UploadProgressProps = {
   progress: UploadProgressType

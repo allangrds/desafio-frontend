@@ -9,7 +9,7 @@ export const VideoListSkeleton = ({ quantity }: VideoListSkeletonProps) => (
     className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 animate-pulse`}
   >
     {Array.from({ length: quantity }).map((_, index) => (
-      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+      // biome-ignore lint/suspicious/noArrayIndexKey: skeleton items have no stable id
       <VideoPreviewSkeleton key={index} />
     ))}
   </div>

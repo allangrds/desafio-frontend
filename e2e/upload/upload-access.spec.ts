@@ -1,4 +1,4 @@
-import { test, expect } from '../../e2e/fixtures/auth'
+import { expect, test } from '../../e2e/fixtures/auth'
 
 test.describe('Upload Page Access', () => {
   test('unauthenticated user visiting /upload is redirected to /auth/signin', async ({

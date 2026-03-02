@@ -1,4 +1,4 @@
-import { test, expect } from '../../e2e/fixtures/auth'
+import { expect, test } from '../../e2e/fixtures/auth'
 
 // Use a specific locator for the upload form submit button (not the header search button)
 const UPLOAD_SUBMIT = 'button:has-text("Upload Video"):not([aria-label])'
@@ -41,9 +41,7 @@ test.describe('Upload Form Flow', () => {
       await expect(
         page.getByRole('link', { name: 'View on YouTube' }),
       ).toBeVisible({ timeout: 20000 })
-      await expect(
-        page.getByText('My Video', { exact: false }),
-      ).toBeVisible()
+      await expect(page.getByText('My Video', { exact: false })).toBeVisible()
     })
 
     test('fill form → mock API returns 500 → error message visible', async ({

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('OAuth Authentication Flow', () => {
   test('navigating to /auth/signin triggers redirect to Google OAuth', async ({

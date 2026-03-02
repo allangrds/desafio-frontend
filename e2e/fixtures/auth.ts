@@ -1,6 +1,6 @@
 import { test as base } from '@playwright/test'
 
-export const test = base.extend<{ authenticatedPage: void }>({
+export const test = base.extend<{ authenticatedPage: undefined }>({
   authenticatedPage: async ({ page }, use) => {
     await page.request.post('/api/test/session', {
       data: {

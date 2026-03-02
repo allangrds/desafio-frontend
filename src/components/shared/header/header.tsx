@@ -1,9 +1,7 @@
-import * as React from 'react'
-
 import Link from 'next/link'
-
-import { SearchInput } from './search-input'
+import type * as React from 'react'
 import type { SearchBarProps } from './search-input'
+import { SearchInput } from './search-input'
 
 export type HeaderProps = SearchBarProps & {
   SignInRegisterButtons: React.ReactNode

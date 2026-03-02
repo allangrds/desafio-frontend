@@ -1,11 +1,10 @@
 'use client'
 
-import * as React from 'react'
-
-import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
+import * as React from 'react'
+import { Button } from '@/components/ui/button'
 
-// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
+// biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js Error component pattern
 const Error = ({
   error,
   reset,

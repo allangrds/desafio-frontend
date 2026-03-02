@@ -17,8 +17,8 @@ jest.mock('@/services/youtube/youtube.service', () => ({
 
 import { getSession } from '@/lib/session'
 import { uploadVideo } from '@/services/youtube/youtube.service'
-import type { SessionData } from '@/types/auth'
 import { mockSession } from '@/test-utils/session'
+import type { SessionData } from '@/types/auth'
 import { POST } from './route'
 
 const mockGetSession = getSession as jest.MockedFunction<typeof getSession>

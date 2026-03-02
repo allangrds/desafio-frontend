@@ -28,7 +28,9 @@ import { oauth2ServerClient } from '@/lib/google-apis'
 import { saveSession } from '@/lib/session'
 import { GET } from './route'
 
-const mockGetToken = oauth2ServerClient.getToken as jest.MockedFunction<typeof oauth2ServerClient.getToken>
+const mockGetToken = oauth2ServerClient.getToken as jest.MockedFunction<
+  typeof oauth2ServerClient.getToken
+>
 const mockSaveSession = saveSession as jest.MockedFunction<typeof saveSession>
 const mockOauth2 = google.oauth2 as jest.MockedFunction<typeof google.oauth2>
 const mockYoutube = google.youtube as jest.MockedFunction<typeof google.youtube>

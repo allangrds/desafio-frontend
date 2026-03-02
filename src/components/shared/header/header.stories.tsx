@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
-
-import { UserMenuSkeleton } from './user-menu/user-menu-skeleton'
-import { UserMenu } from './user-menu/user-menu'
-
 import { Header } from './header'
+import { UserMenu } from './user-menu/user-menu'
+import { UserMenuSkeleton } from './user-menu/user-menu-skeleton'
 
 const meta = {
   title: 'Components/Header',

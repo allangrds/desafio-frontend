@@ -1,5 +1,4 @@
 import { getVideos, searchVideos } from './youtube.service'
-import type { Video } from '@/types/youtube'
 
 // Mock googleapis
 jest.mock('googleapis', () => {

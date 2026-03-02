@@ -8,9 +8,14 @@ jest.mock('./results.hooks', () => ({
   useResultsLogic: jest.fn(),
 }))
 
+interface MockResultsViewProps {
+  header: { initialQuery: string }
+  searchResults: { Component: React.ReactNode }
+}
+
 // Mock do ResultsView
 jest.mock('./results.view', () => ({
-  ResultsView: ({ header, searchResults }: any) => (
+  ResultsView: ({ header, searchResults }: MockResultsViewProps) => (
     <div data-testid="results-view">
       <div data-testid="search-query">{header.initialQuery}</div>
       <div data-testid="search-results">{searchResults.Component}</div>

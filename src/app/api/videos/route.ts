@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server'
 
 import { getSession } from '@/lib/session'
 import {
-  uploadVideo,
   getVideos,
   searchVideos,
+  uploadVideo,
 } from '@/services/youtube/youtube.service'
 
 import type { VideoPrivacy } from '@/types/youtube'
@@ -17,7 +17,7 @@ export const GET = async (request: NextRequest) => {
     const category = searchParams.get('category')
     const maxResults = searchParams.get('maxResults')
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: YouTube API returns dynamic structure
     let videos: any
 
     if (search !== null) {
@@ -47,7 +47,7 @@ export const POST = async (request: NextRequest) => {
   try {
     const session = await getSession()
 
-    if (!session || !session.tokens.accessToken) {
+    if (!session?.tokens.accessToken) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
@@ -57,7 +57,7 @@ export const POST = async (request: NextRequest) => {
     const privacy = formData.get('privacy') as VideoPrivacy
     const file = formData.get('file') as File
 
-    if (!title || !privacy || !file) {
+    if (!(title && privacy && file)) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 },
