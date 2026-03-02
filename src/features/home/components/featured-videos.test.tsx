@@ -1,8 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { FeaturedVideos } from './featured-videos'
 
-global.fetch = jest.fn()
-
 const mockVideos = [
   {
     id: 'video1',
@@ -33,14 +31,14 @@ const mockVideos = [
   },
 ]
 
-const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-
 describe('FeaturedVideos', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    global.fetch = jest.fn()
   })
 
   it('should render featured videos from API', async () => {
+    const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => mockVideos,
@@ -58,6 +56,7 @@ describe('FeaturedVideos', () => {
   })
 
   it('should render NoVideos component when no videos are returned', async () => {
+    const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => [],
@@ -70,6 +69,7 @@ describe('FeaturedVideos', () => {
   })
 
   it('should render NoVideos component when API call fails', async () => {
+    const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
     jest.spyOn(console, 'error').mockImplementation(() => {})
     mockFetch.mockResolvedValue({
       ok: false,
@@ -80,16 +80,15 @@ describe('FeaturedVideos', () => {
 
     expect(fetch).toHaveBeenCalledTimes(1)
     expect(screen.getByText('No videos found')).toBeDefined()
-    jest.restoreAllMocks()
   })
 
   it('should handle API timeout gracefully', async () => {
+    const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
     jest.spyOn(console, 'error').mockImplementation(() => {})
     mockFetch.mockRejectedValue(new Error('Request timeout'))
 
     render(await FeaturedVideos())
 
     expect(screen.getByText('No videos found')).toBeDefined()
-    jest.restoreAllMocks()
   })
 })

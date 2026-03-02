@@ -84,7 +84,6 @@ describe('SearchResults', () => {
       'http://localhost:3000/api/videos?search=test%20query',
     )
     expect(Component).toBeDefined()
-    jest.restoreAllMocks()
   })
 
   it('should handle no internet connection gracefully', async () => {
@@ -97,7 +96,6 @@ describe('SearchResults', () => {
       'http://localhost:3000/api/videos?search=react',
     )
     expect(Component).toBeDefined()
-    jest.restoreAllMocks()
   })
 
   it('should handle API timeout', async () => {
@@ -107,6 +105,5 @@ describe('SearchResults', () => {
     const Component = await SearchResults({ searchQuery: 'typescript' })
 
     expect(Component).toBeDefined()
-    jest.restoreAllMocks()
   })
 })
