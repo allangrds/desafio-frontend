@@ -1,12 +1,12 @@
 'use client'
 
-import * as React from 'react'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { uploadVideoSchema, UploadVideoFormData } from './upload.schema'
-import { UploadProgress, UploadedVideo } from '@/types/youtube'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { useForm } from 'react-hook-form'
 import { useSearchHistoryStore } from '@/stores/search-history'
+import type { UploadedVideo, UploadProgress } from '@/types/youtube'
+import { type UploadVideoFormData, uploadVideoSchema } from './upload.schema'
 
 export const useUploadLogic = () => {
   const router = useRouter()

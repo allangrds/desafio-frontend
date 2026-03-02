@@ -1,8 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useForm } from 'react-hook-form'
+import { type UploadVideoFormData, uploadVideoSchema } from '../upload.schema'
 import { UploadForm } from './upload-form'
-import { uploadVideoSchema, UploadVideoFormData } from '../upload.schema'
 
 // Wrapper component to provide form context
 const UploadFormWrapper = ({

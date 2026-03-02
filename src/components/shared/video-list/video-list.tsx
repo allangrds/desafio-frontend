@@ -1,5 +1,5 @@
-import { VideoPreview } from '@/components/shared/video-preview'
 import type { VideoPreviewProps } from '@/components/shared/video-preview'
+import { VideoPreview } from '@/components/shared/video-preview'
 
 export type VideoListProps = {
   videos: (VideoPreviewProps & { id: string })[]

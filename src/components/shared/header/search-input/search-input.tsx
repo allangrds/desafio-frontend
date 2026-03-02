@@ -1,8 +1,7 @@
 'use client'
 
+import { Clock, Search } from 'lucide-react'
 import * as React from 'react'
-
-import { Search, Clock } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -60,7 +59,7 @@ export const SearchInput = ({
 
   return (
     <div className="relative w-full max-w-2xl">
-      {/** biome-ignore lint/a11y/useSemanticElements: <explanation> */}
+      {/** biome-ignore lint/a11y/useSemanticElements: form with role=search is valid HTML5 */}
       <form
         onSubmit={handleOnSubmit}
         className="flex items-center gap-0 w-full"

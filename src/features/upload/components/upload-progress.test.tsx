@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
+import type { UploadProgress as UploadProgressType } from '@/types/youtube'
 import { UploadProgress } from './upload-progress'
-import { UploadProgress as UploadProgressType } from '@/types/youtube'
 
 describe('UploadProgress', () => {
   it('should not render when status is idle', () => {
@@ -150,7 +150,7 @@ describe('UploadProgress', () => {
       status: 'uploading',
     }
 
-    const { container } = render(<UploadProgress progress={progress} />)
+    render(<UploadProgress progress={progress} />)
 
     const statusText = screen.getByText('Uploading...')
     expect(statusText.className).toContain('text-blue-600')
@@ -196,7 +196,7 @@ describe('UploadProgress', () => {
   it('should render percentage at different values', () => {
     const testCases = [0, 25, 50, 75, 100]
 
-    testCases.forEach((percentage) => {
+    for (const percentage of testCases) {
       const progress: UploadProgressType = {
         percentage,
         status: 'uploading',
@@ -207,7 +207,7 @@ describe('UploadProgress', () => {
       expect(screen.getByText(`${percentage}%`)).toBeDefined()
 
       rerender(<UploadProgress progress={{ ...progress, percentage: 0 }} />)
-    })
+    }
   })
 
   it('should show success message only on complete status', () => {

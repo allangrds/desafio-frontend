@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import { useSearchHistoryStore } from '../../stores/search-history'
 

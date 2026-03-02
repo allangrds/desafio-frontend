@@ -1,7 +1,7 @@
-import { renderHook, waitFor, act } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
-import { useUploadLogic } from './upload.hooks'
 import { useSearchHistoryStore } from '../../stores/search-history'
+import { useUploadLogic } from './upload.hooks'
 
 // Mock fetch globally
 global.fetch = jest.fn()

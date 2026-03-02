@@ -1,8 +1,7 @@
 import { getIronSession } from 'iron-session'
 import { cookies } from 'next/headers'
-
-import type { SessionData } from '@/types/auth'
 import { SESSION_OPTIONS } from '@/constants/session'
+import type { SessionData } from '@/types/auth'
 
 export const getSession = async (): Promise<SessionData | null> => {
   const cookieStore = await cookies()
@@ -11,7 +10,7 @@ export const getSession = async (): Promise<SessionData | null> => {
     SESSION_OPTIONS,
   )
 
-  if (!session.user || !session.tokens) {
+  if (!(session.user && session.tokens)) {
     return null
   }
 

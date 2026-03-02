@@ -1,5 +1,5 @@
-import { VideoList } from '@/components/shared/video-list'
 import { NoVideos } from '@/components/shared/no-videos'
+import { VideoList } from '@/components/shared/video-list'
 import { getApiUrl } from '@/lib/api-url'
 import type { Video } from '@/types/youtube'
 

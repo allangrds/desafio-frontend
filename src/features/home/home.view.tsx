@@ -1,5 +1,5 @@
-import { Header } from '@/components/shared/header'
 import type { HeaderProps } from '@/components/shared/header'
+import { Header } from '@/components/shared/header'
 
 type HomeViewProps = {
   header: HeaderProps

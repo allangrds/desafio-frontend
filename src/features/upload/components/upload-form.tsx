@@ -1,10 +1,15 @@
 'use client'
 
-import { UseFormReturn } from 'react-hook-form'
-import { UploadVideoFormData } from '../upload.schema'
+import type { UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -12,13 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Field,
-  FieldLabel,
-  FieldDescription,
-  FieldError,
-} from '@/components/ui/field'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
+import type { UploadVideoFormData } from '../upload.schema'
 
 type UploadFormProps = {
   form: UseFormReturn<UploadVideoFormData>

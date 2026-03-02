@@ -1,7 +1,7 @@
 'use client'
 
-import { HomeView } from './home.view'
 import { useHomeLogic } from './home.hooks'
+import { HomeView } from './home.view'
 
 type HomeContainerProps = {
   userMenuSlot: React.ReactNode

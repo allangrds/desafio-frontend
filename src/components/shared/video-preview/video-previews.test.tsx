@@ -32,9 +32,9 @@ describe('VideoPreview', () => {
 
     const links = screen.getAllByRole('link')
     expect(links).toHaveLength(2)
-    links.forEach((link) => {
+    for (const link of links) {
       expect(link).toHaveAttribute('href', mockProps.href)
-    })
+    }
   })
 
   it('should format views correctly for less than 1000', () => {

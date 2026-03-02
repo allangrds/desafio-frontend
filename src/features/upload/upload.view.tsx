@@ -1,17 +1,17 @@
 'use client'
 
-import { UseFormReturn } from 'react-hook-form'
-import { UploadVideoFormData } from './upload.schema'
-import {
-  UploadProgress as UploadProgressType,
+import Link from 'next/link'
+import type { UseFormReturn } from 'react-hook-form'
+import { Header } from '@/components/shared/header'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import type {
   UploadedVideo,
+  UploadProgress as UploadProgressType,
 } from '@/types/youtube'
 import { UploadForm } from './components/upload-form'
 import { UploadProgress } from './components/upload-progress'
-import { Header } from '@/components/shared/header'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import type { UploadVideoFormData } from './upload.schema'
 
 export type UploadViewProps = {
   form: UseFormReturn<UploadVideoFormData>
