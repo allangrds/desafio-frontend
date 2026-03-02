@@ -3,9 +3,6 @@ import { useRouter } from 'next/navigation'
 import { useSearchHistoryStore } from '../../stores/search-history'
 import { useUploadLogic } from './upload.hooks'
 
-// Mock fetch globally
-global.fetch = jest.fn()
-
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }))
@@ -15,7 +12,6 @@ jest.mock('../../stores/search-history', () => ({
 }))
 
 describe('useUploadLogic', () => {
-  const mockFetch = global.fetch as jest.Mock
   const mockUseRouter = useRouter as jest.Mock
   const mockUseSearchHistoryStore =
     useSearchHistoryStore as unknown as jest.Mock
@@ -25,6 +21,7 @@ describe('useUploadLogic', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.useFakeTimers()
+    global.fetch = jest.fn()
     mockUseRouter.mockReturnValue({
       push: mockPush,
     })
@@ -35,7 +32,7 @@ describe('useUploadLogic', () => {
   })
 
   afterEach(() => {
-    jest.runOnlyPendingTimers()
+    jest.clearAllTimers()
     jest.useRealTimers()
   })
 
@@ -55,6 +52,7 @@ describe('useUploadLogic', () => {
   })
 
   it('should handle form submission with file upload', async () => {
+    const mockFetch = global.fetch as jest.Mock
     const { result } = renderHook(() => useUploadLogic())
 
     const mockFile = new File(['video content'], 'test.mp4', {
@@ -89,10 +87,8 @@ describe('useUploadLogic', () => {
     })
   })
 
-  // Note: Detailed progress percentage and timing tests are complex with fake timers
-  // The important behavior is that the upload succeeds and form resets correctly
-
   it('should complete upload successfully and reset form', async () => {
+    const mockFetch = global.fetch as jest.Mock
     const { result } = renderHook(() => useUploadLogic())
 
     const mockFile = new File(['video content'], 'test.mp4', {
@@ -138,6 +134,7 @@ describe('useUploadLogic', () => {
   })
 
   it('should create FormData with correct fields', async () => {
+    const mockFetch = global.fetch as jest.Mock
     const { result } = renderHook(() => useUploadLogic())
 
     const mockFile = new File(['video content'], 'test.mp4', {
@@ -187,8 +184,9 @@ describe('useUploadLogic', () => {
   })
 
   it('should handle upload error and set error status', async () => {
+    const mockFetch = global.fetch as jest.Mock
     const { result } = renderHook(() => useUploadLogic())
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+    jest.spyOn(console, 'error').mockImplementation(() => {})
 
     const mockFile = new File(['video content'], 'test.mp4', {
       type: 'video/mp4',
@@ -224,13 +222,13 @@ describe('useUploadLogic', () => {
       )
     })
 
-    expect(consoleErrorSpy).toHaveBeenCalled()
-    consoleErrorSpy.mockRestore()
+    expect(console.error).toHaveBeenCalled()
   })
 
   it('should handle network error during upload', async () => {
+    const mockFetch = global.fetch as jest.Mock
     const { result } = renderHook(() => useUploadLogic())
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+    jest.spyOn(console, 'error').mockImplementation(() => {})
 
     const mockFile = new File(['video content'], 'test.mp4', {
       type: 'video/mp4',
@@ -263,14 +261,14 @@ describe('useUploadLogic', () => {
       )
     })
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
+    expect(console.error).toHaveBeenCalledWith(
       'Upload error:',
       expect.any(Error),
     )
-    consoleErrorSpy.mockRestore()
   })
 
   it('should handle empty description field', async () => {
+    const mockFetch = global.fetch as jest.Mock
     const { result } = renderHook(() => useUploadLogic())
 
     const mockFile = new File(['video content'], 'test.mp4', {

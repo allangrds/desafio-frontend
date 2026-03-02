@@ -80,7 +80,6 @@ describe('OtherVideos', () => {
 
     expect(fetch).toHaveBeenCalledTimes(1)
     expect(screen.getByText('No videos found')).toBeDefined()
-    jest.restoreAllMocks()
   })
 
   it('should handle connection issues gracefully', async () => {
@@ -90,6 +89,5 @@ describe('OtherVideos', () => {
     render(await OtherVideos())
 
     expect(screen.getByText('No videos found')).toBeDefined()
-    jest.restoreAllMocks()
   })
 })

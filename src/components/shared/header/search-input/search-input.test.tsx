@@ -175,12 +175,9 @@ describe('SearchInput', () => {
       await userEvent.click(outside)
 
       // Wait for dropdown to disappear
-      await waitFor(
-        () => {
-          expect(screen.queryByRole('listbox')).toBeNull()
-        },
-        { timeout: 300 },
-      )
+      await waitFor(() => {
+        expect(screen.queryByRole('listbox')).toBeNull()
+      })
     })
 
     test('should call onSearch and onAddSearch a when pressing Enter', async () => {
