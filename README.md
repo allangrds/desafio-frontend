@@ -2,6 +2,7 @@
 
 A practical implementation of the Bycoders frontend challenge featuring video search, a compelling home experience, robust state management, and locally-persisted search history. Includes Google OAuth authentication and video upload capabilities.
 
+[![Pull Request CI](https://github.com/allangrds/desafio-frontend/actions/workflows/pullrequest.yml/badge.svg)](https://github.com/allangrds/desafio-frontend/actions/workflows/pullrequest.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-16.0-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2-61dafb?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
