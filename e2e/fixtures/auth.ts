@@ -15,7 +15,7 @@ export const test = base.extend<{ authenticatedPage: undefined }>({
         },
       },
     })
-    await use()
+    await use(undefined)
     await page.request.delete('/api/test/session')
   },
 })

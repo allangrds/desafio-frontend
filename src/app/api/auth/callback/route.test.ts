@@ -23,13 +23,14 @@ jest.mock('@/lib/session', () => ({
   destroySession: jest.fn(),
 }))
 
+import type { GetTokenResponse } from 'google-auth-library/build/src/auth/oauth2client'
 import { google } from 'googleapis'
 import { oauth2ServerClient } from '@/lib/google-apis'
 import { saveSession } from '@/lib/session'
 import { GET } from './route'
 
 const mockGetToken = oauth2ServerClient.getToken as jest.MockedFunction<
-  typeof oauth2ServerClient.getToken
+  () => Promise<GetTokenResponse>
 >
 const mockSaveSession = saveSession as jest.MockedFunction<typeof saveSession>
 const mockOauth2 = google.oauth2 as jest.MockedFunction<typeof google.oauth2>
@@ -48,13 +49,15 @@ describe('GET /api/auth/callback', () => {
   })
 
   it('valid code → saves session and redirects to /', async () => {
-    mockGetToken.mockResolvedValue({
+    const tokenResponse: GetTokenResponse = {
       tokens: {
         access_token: 'mock-access-token',
         refresh_token: 'mock-refresh-token',
         expiry_date: 9999999999,
       },
-    })
+      res: null,
+    }
+    mockGetToken.mockResolvedValue(tokenResponse)
 
     mockOauth2.mockReturnValue({
       userinfo: {
@@ -119,13 +122,15 @@ describe('GET /api/auth/callback', () => {
   })
 
   it('youtube.channels.list returns empty items → saveSession called with channelTitle My Channel', async () => {
-    mockGetToken.mockResolvedValue({
+    const tokenResponse: GetTokenResponse = {
       tokens: {
         access_token: 'mock-access-token',
         refresh_token: undefined,
         expiry_date: undefined,
       },
-    })
+      res: null,
+    }
+    mockGetToken.mockResolvedValue(tokenResponse)
 
     mockOauth2.mockReturnValue({
       userinfo: {
