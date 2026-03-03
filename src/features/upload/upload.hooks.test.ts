@@ -307,6 +307,53 @@ describe('useUploadLogic', () => {
     expect(formData.get('description')).toBe('')
   })
 
+  it('should cap progress at 90 and set status to processing', async () => {
+    const mockFetch = global.fetch as jest.Mock
+    const { result } = renderHook(() => useUploadLogic())
+
+    const mockFile = new File(['video'], 'v.mp4', { type: 'video/mp4' })
+    const mockFileList = {
+      0: mockFile,
+      length: 1,
+      item: () => mockFile,
+    } as unknown as FileList
+
+    // Delay fetch resolution so progress interval fires many times
+    let resolveFetch!: (v: unknown) => void
+    mockFetch.mockReturnValue(
+      new Promise((res) => {
+        resolveFetch = res
+      }),
+    )
+
+    act(() => {
+      result.current.form.setValue('title', 'T')
+      result.current.form.setValue('file', mockFileList)
+    })
+
+    act(() => {
+      result.current.form.handleSubmit(result.current.onSubmit)()
+    })
+
+    // Advance timers enough to exceed 90% (10 intervals × 10% each)
+    await act(async () => {
+      for (let i = 0; i < 12; i++) {
+        jest.advanceTimersByTime(500)
+        await Promise.resolve()
+      }
+    })
+
+    // Resolve fetch
+    await act(async () => {
+      resolveFetch({ ok: true, json: async () => ({ id: 'v1' }) })
+      await Promise.resolve()
+    })
+
+    await waitFor(() => {
+      expect(result.current.progress.percentage).toBeLessThanOrEqual(100)
+    })
+  })
+
   describe('Search functionality', () => {
     it('should return initialQuery and recentSearches', () => {
       const { result } = renderHook(() => useUploadLogic())

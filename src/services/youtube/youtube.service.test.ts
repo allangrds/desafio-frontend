@@ -1,19 +1,21 @@
-import { getVideos, searchVideos } from './youtube.service'
+import { getVideos, searchVideos, uploadVideo } from './youtube.service'
 
-// Mock googleapis
+// Mock googleapis — all mock fns are defined inside factory to avoid hoisting issues
 jest.mock('googleapis', () => {
   const mockList = jest.fn()
   const mockSearch = jest.fn()
+  const mockInsert = jest.fn()
+  const mockSetCredentials = jest.fn()
+  const mockOAuth2Instance = { setCredentials: mockSetCredentials }
   return {
     google: {
       youtube: jest.fn(() => ({
-        videos: {
-          list: mockList,
-        },
-        search: {
-          list: mockSearch,
-        },
+        videos: { list: mockList, insert: mockInsert },
+        search: { list: mockSearch },
       })),
+      auth: {
+        OAuth2: jest.fn().mockReturnValue(mockOAuth2Instance),
+      },
     },
   }
 })
@@ -93,8 +95,12 @@ const mockYouTubeResponse = {
 
 describe('YouTubeService', () => {
   const { google } = require('googleapis')
-  const mockList = google.youtube().videos.list
-  const mockSearch = google.youtube().search.list
+  const mockYouTubeInstance = google.youtube()
+  const mockList = mockYouTubeInstance.videos.list
+  const mockSearch = mockYouTubeInstance.search.list
+  const mockInsert = mockYouTubeInstance.videos.insert
+  const mockOAuth2Instance = new google.auth.OAuth2()
+  const mockSetCredentials = mockOAuth2Instance.setCredentials
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -307,6 +313,224 @@ describe('YouTubeService', () => {
       mockSearch.mockRejectedValue(new Error('Search API Error'))
 
       await expect(searchVideos('test')).rejects.toThrow()
+    })
+  })
+
+  describe('uploadVideo', () => {
+    const mockArrayBuffer = new ArrayBuffer(7)
+    const mockFile = Object.assign(
+      new File(['content'], 'video.mp4', {
+        type: 'video/mp4',
+      }),
+      {
+        arrayBuffer: jest.fn().mockResolvedValue(mockArrayBuffer),
+      },
+    )
+
+    beforeEach(() => {
+      mockInsert.mockResolvedValue({
+        data: {
+          id: 'uploaded123',
+          snippet: { title: 'My Video', description: 'A description' },
+          status: { privacyStatus: 'public' },
+        },
+      })
+    })
+
+    it('should upload a video and return UploadedVideo', async () => {
+      const result = await uploadVideo(
+        'access-token',
+        mockFile,
+        'My Video',
+        'A description',
+        'public',
+      )
+
+      expect(result).toEqual({
+        id: 'uploaded123',
+        title: 'My Video',
+        description: 'A description',
+        privacy: 'public',
+        url: 'https://www.youtube.com/watch?v=uploaded123',
+      })
+    })
+
+    it('should set OAuth credentials with the access token', async () => {
+      await uploadVideo('my-access-token', mockFile, 'Title', 'Desc', 'private')
+
+      expect(mockSetCredentials).toHaveBeenCalledWith({
+        access_token: 'my-access-token',
+      })
+    })
+
+    it('falls back to provided title when response has no snippet title', async () => {
+      mockInsert.mockResolvedValue({
+        data: {
+          id: 'vid456',
+          snippet: {},
+          status: {},
+        },
+      })
+
+      const result = await uploadVideo(
+        'token',
+        mockFile,
+        'Fallback Title',
+        'Fallback Desc',
+        'unlisted',
+      )
+
+      expect(result.title).toBe('Fallback Title')
+      expect(result.description).toBe('Fallback Desc')
+      expect(result.privacy).toBe('unlisted')
+    })
+
+    it('falls back to empty string when response has no id', async () => {
+      mockInsert.mockResolvedValue({
+        data: {
+          snippet: { title: 'T', description: 'D' },
+          status: { privacyStatus: 'public' },
+        },
+      })
+
+      const result = await uploadVideo('token', mockFile, 'T', 'D', 'public')
+
+      expect(result.id).toBe('')
+      expect(result.url).toBe('https://www.youtube.com/watch?v=')
+    })
+  })
+
+  describe('transformYouTubeVideo branches', () => {
+    it('uses medium thumbnail when high is not available', async () => {
+      mockList.mockResolvedValue({
+        data: {
+          items: [
+            {
+              id: 'vid-medium',
+              snippet: {
+                title: 'Medium Thumb Video',
+                channelTitle: 'Channel',
+                thumbnails: {
+                  medium: { url: 'https://img.youtube.com/medium.jpg' },
+                },
+              },
+              statistics: { viewCount: '100' },
+              contentDetails: { duration: 'PT5M' },
+            },
+          ],
+        },
+      })
+
+      const videos = await getVideos()
+      expect(videos[0].thumbnailUrl).toBe('https://img.youtube.com/medium.jpg')
+    })
+
+    it('returns empty string when no thumbnail available', async () => {
+      mockList.mockResolvedValue({
+        data: {
+          items: [
+            {
+              id: 'vid-nothumb',
+              snippet: {
+                title: 'No Thumb Video',
+                channelTitle: 'Channel',
+                thumbnails: {},
+              },
+              statistics: { viewCount: '0' },
+              contentDetails: { duration: 'PT0S' },
+            },
+          ],
+        },
+      })
+
+      const videos = await getVideos()
+      expect(videos[0].thumbnailUrl).toBe('')
+    })
+
+    it('returns 0 views when statistics are missing', async () => {
+      mockList.mockResolvedValue({
+        data: {
+          items: [
+            {
+              id: 'vid-nostats',
+              snippet: {
+                title: 'No Stats Video',
+                channelTitle: 'Channel',
+                thumbnails: { high: { url: 'https://img.youtube.com/h.jpg' } },
+              },
+              contentDetails: { duration: 'PT10M' },
+            },
+          ],
+        },
+      })
+
+      const videos = await getVideos()
+      expect(videos[0].views).toBe(0)
+    })
+
+    it('returns 0:00 duration when contentDetails are missing', async () => {
+      mockList.mockResolvedValue({
+        data: {
+          items: [
+            {
+              id: 'vid-noduration',
+              snippet: {
+                title: 'No Duration Video',
+                channelTitle: 'Channel',
+                thumbnails: { high: { url: 'https://img.youtube.com/h.jpg' } },
+              },
+              statistics: { viewCount: '50' },
+            },
+          ],
+        },
+      })
+
+      const videos = await getVideos()
+      expect(videos[0].duration).toBe('0:00')
+    })
+
+    it('formats duration with hours correctly', async () => {
+      mockList.mockResolvedValue({
+        data: {
+          items: [
+            {
+              id: 'vid-hours',
+              snippet: {
+                title: 'Long Video',
+                channelTitle: 'Channel',
+                thumbnails: { high: { url: 'https://img.youtube.com/h.jpg' } },
+              },
+              statistics: { viewCount: '999' },
+              contentDetails: { duration: 'PT2H15M30S' },
+            },
+          ],
+        },
+      })
+
+      const videos = await getVideos()
+      expect(videos[0].duration).toBe('2:15:30')
+    })
+
+    it('returns 0:00 for invalid duration format', async () => {
+      mockList.mockResolvedValue({
+        data: {
+          items: [
+            {
+              id: 'vid-invalid',
+              snippet: {
+                title: 'Invalid Duration',
+                channelTitle: 'Channel',
+                thumbnails: { high: { url: 'https://img.youtube.com/h.jpg' } },
+              },
+              statistics: { viewCount: '10' },
+              contentDetails: { duration: 'INVALID' },
+            },
+          ],
+        },
+      })
+
+      const videos = await getVideos()
+      expect(videos[0].duration).toBe('0:00')
     })
   })
 })

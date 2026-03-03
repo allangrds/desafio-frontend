@@ -16,13 +16,24 @@ jest.mock('@/services/youtube/youtube.service', () => ({
 }))
 
 import { getSession } from '@/lib/session'
-import { uploadVideo } from '@/services/youtube/youtube.service'
+import {
+  getVideos,
+  searchVideos,
+  uploadVideo,
+} from '@/services/youtube/youtube.service'
 import { mockSession } from '@/test-utils/session'
 import type { SessionData } from '@/types/auth'
-import { POST } from './route'
+import { GET, POST } from './route'
 
 const mockGetSession = getSession as jest.MockedFunction<typeof getSession>
 const mockUploadVideo = uploadVideo as jest.MockedFunction<typeof uploadVideo>
+const mockGetVideos = getVideos as jest.MockedFunction<typeof getVideos>
+const mockSearchVideos = searchVideos as jest.MockedFunction<
+  typeof searchVideos
+>
+
+const createGetRequest = (url: string): NextRequest =>
+  new NextRequest(url, { method: 'GET' })
 
 const createPostRequest = (formData: FormData): NextRequest => {
   return new NextRequest('http://localhost:3000/api/videos', {
@@ -30,6 +41,86 @@ const createPostRequest = (formData: FormData): NextRequest => {
     body: formData,
   })
 }
+
+const mockVideos = [
+  {
+    id: 'v1',
+    title: 'Video 1',
+    thumbnailUrl: 'https://img.youtube.com/t1.jpg',
+    channelName: 'Channel 1',
+    views: 100,
+    duration: '5:00',
+    href: 'https://youtube.com/watch?v=v1',
+  },
+]
+
+describe('GET /api/videos', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  it('returns videos with no search params (default)', async () => {
+    mockGetVideos.mockResolvedValue(mockVideos)
+
+    const req = createGetRequest('http://localhost:3000/api/videos')
+    const res = await GET(req)
+
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body).toEqual(mockVideos)
+    expect(mockGetVideos).toHaveBeenCalledWith({ maxResults: undefined })
+  })
+
+  it('returns search results when search param is provided', async () => {
+    mockSearchVideos.mockResolvedValue(mockVideos)
+
+    const req = createGetRequest(
+      'http://localhost:3000/api/videos?search=react',
+    )
+    const res = await GET(req)
+
+    expect(res.status).toBe(200)
+    expect(mockSearchVideos).toHaveBeenCalledWith('react')
+  })
+
+  it('filters by category when category param is provided', async () => {
+    mockGetVideos.mockResolvedValue(mockVideos)
+
+    const req = createGetRequest(
+      'http://localhost:3000/api/videos?category=28&maxResults=5',
+    )
+    const res = await GET(req)
+
+    expect(res.status).toBe(200)
+    expect(mockGetVideos).toHaveBeenCalledWith({
+      videoCategoryId: '28',
+      maxResults: 5,
+    })
+  })
+
+  it('uses maxResults without category', async () => {
+    mockGetVideos.mockResolvedValue(mockVideos)
+
+    const req = createGetRequest(
+      'http://localhost:3000/api/videos?maxResults=10',
+    )
+    await GET(req)
+
+    expect(mockGetVideos).toHaveBeenCalledWith({ maxResults: 10 })
+  })
+
+  it('returns 500 when service throws', async () => {
+    mockGetVideos.mockRejectedValue(new Error('API down'))
+
+    const req = createGetRequest('http://localhost:3000/api/videos')
+    const res = await GET(req)
+
+    expect(res.status).toBe(500)
+    const body = await res.json()
+    expect(body).toEqual({ error: 'Failed to fetch videos' })
+  })
+})
 
 describe('POST /api/videos', () => {
   beforeEach(() => {

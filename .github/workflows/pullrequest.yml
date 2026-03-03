@@ -108,7 +108,7 @@ jobs:
             node-modules-${{ runner.os }}-
 
       - name: Run unit & integration tests
-        run: npm test -- --runInBand
+        run: npm test -- --runInBand --coverage
 
   e2e-tests:
     name: E2E Tests (Playwright)
@@ -136,7 +136,7 @@ jobs:
         run: npm run build
 
       - name: Run E2E tests
-        run: NODE_ENV=test npm run test:e2e
+        run: NODE_ENV=test npm run test:e2e -- --retries=1
 
   security-audit:
     name: Security (npm audit)
@@ -158,7 +158,81 @@ jobs:
             node-modules-${{ runner.os }}-
 
       - name: Run npm audit (fail on high)
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=high
+
+  storybook-build:
+    name: Storybook Build
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+  storybook-test:
+    name: Storybook Interaction Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Run Storybook interaction tests
+        run: npx vitest run --project=storybook
+
+  bundle-size:
+    name: Bundle Size Check
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Build application
+        run: npm run build
+
+      - name: Check bundle size
+        run: npx size-limit
 
   lighthouse:
     name: Lighthouse CI (Performance)

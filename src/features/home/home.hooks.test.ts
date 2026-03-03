@@ -1,64 +1,49 @@
 import { renderHook } from '@testing-library/react'
-import { useRouter } from 'next/navigation'
-
-import { useSearchHistoryStore } from '../../stores/search-history'
-
+import { useSearch } from '@/hooks/use-search'
 import { useHomeLogic } from './home.hooks'
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}))
-
-jest.mock('../../stores/search-history', () => ({
-  useSearchHistoryStore: jest.fn(),
+jest.mock('@/hooks/use-search', () => ({
+  useSearch: jest.fn(),
 }))
 
 describe('useHomeLogic', () => {
-  const mockUseRouter = useRouter as jest.Mock
-  const mockUseSearchHistoryStore =
-    useSearchHistoryStore as unknown as jest.Mock
-  const mockPush = jest.fn()
-  const mockAddSearch = jest.fn()
+  const mockUseSearch = useSearch as jest.Mock
+  const mockOnSearch = jest.fn()
+  const mockOnAddSearch = jest.fn()
 
   beforeEach(() => {
-    mockUseRouter.mockReturnValue({
-      push: mockPush,
+    mockUseSearch.mockReturnValue({
+      onSearch: mockOnSearch,
+      onAddSearch: mockOnAddSearch,
+      recentSearches: ['react', 'typescript'],
     })
   })
 
-  it('should return initialQuery and recentSearches as empty', () => {
-    mockUseSearchHistoryStore.mockReturnValue({
-      searches: ['react', 'typescript'],
-      addSearch: mockAddSearch,
-    })
-
+  it('should return initialQuery as empty string', () => {
     const { result } = renderHook(() => useHomeLogic())
 
     expect(result.current.initialQuery).toBe('')
+  })
+
+  it('should return recentSearches from useSearch', () => {
+    const { result } = renderHook(() => useHomeLogic())
+
     expect(result.current.recentSearches).toEqual(['react', 'typescript'])
   })
 
-  it('should navigate to results page when onSearch is called', () => {
+  it('should delegate onSearch to useSearch', () => {
     const { result } = renderHook(() => useHomeLogic())
 
     result.current.onSearch('react hooks')
 
-    expect(mockPush).toHaveBeenCalledWith('/results?search=react%20hooks')
+    expect(mockOnSearch).toHaveBeenCalledWith('react hooks')
   })
 
-  it('should add search to history when onAddSearch is called', () => {
+  it('should delegate onAddSearch to useSearch', () => {
     const { result } = renderHook(() => useHomeLogic())
 
     result.current.onAddSearch('new search')
 
-    expect(mockAddSearch).toHaveBeenCalledWith('new search')
-  })
-
-  it('should encode special characters in search query', () => {
-    const { result } = renderHook(() => useHomeLogic())
-
-    result.current.onSearch('react & hooks')
-
-    expect(mockPush).toHaveBeenCalledWith('/results?search=react%20%26%20hooks')
+    expect(mockOnAddSearch).toHaveBeenCalledWith('new search')
   })
 })
