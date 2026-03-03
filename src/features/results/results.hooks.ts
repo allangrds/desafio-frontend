@@ -1,26 +1,15 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useSearchHistoryStore } from '@/stores/search-history'
+import { useSearchParams } from 'next/navigation'
+import { useSearch } from '@/hooks/use-search'
 
 export const useResultsLogic = () => {
   const searchParams = useSearchParams()
-  const router = useRouter()
-  const { searches, addSearch } = useSearchHistoryStore()
-
-  const searchQuery = searchParams.get('search') || ''
-
-  const onSearch = (query: string) => {
-    router.push(`/results?search=${encodeURIComponent(query)}`)
-  }
-
-  const onAddSearch = (query: string) => {
-    addSearch(query)
-  }
+  const { onSearch, onAddSearch, recentSearches } = useSearch()
 
   return {
-    searchQuery,
-    recentSearches: searches,
+    searchQuery: searchParams.get('search') || '',
+    recentSearches,
     onSearch,
     onAddSearch,
   }

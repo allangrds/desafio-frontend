@@ -23,9 +23,9 @@ const Error = ({
       <AlertCircle className="h-16 w-16 text-destructive" />
 
       <div className="text-center space-y-3 max-w-md">
-        <h2 className="text-2xl font-bold">Oops! Something went wrong</h2>
+        <h2 className="text-2xl font-bold">Upload failed</h2>
         <p className="text-muted-foreground">
-          We couldn't load the content. Please try again in a few moments.
+          Upload failed — please try again.
         </p>
       </div>
 

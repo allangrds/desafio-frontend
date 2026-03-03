@@ -1,37 +1,28 @@
 import { renderHook } from '@testing-library/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-
-import { useSearchHistoryStore } from '../../stores/search-history'
-
+import { useSearchParams } from 'next/navigation'
+import { useSearch } from '@/hooks/use-search'
 import { useResultsLogic } from './results.hooks'
 
-// Mock next/navigation
 jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
-  useRouter: jest.fn(),
 }))
 
-// Mock search history store
-jest.mock('../../stores/search-history', () => ({
-  useSearchHistoryStore: jest.fn(),
+jest.mock('@/hooks/use-search', () => ({
+  useSearch: jest.fn(),
 }))
 
 describe('useResultsLogic', () => {
   const mockUseSearchParams = useSearchParams as jest.Mock
-  const mockUseRouter = useRouter as jest.Mock
-  const mockUseSearchHistoryStore =
-    useSearchHistoryStore as unknown as jest.Mock
-  const mockAddSearch = jest.fn()
-  const mockPush = jest.fn()
+  const mockUseSearch = useSearch as jest.Mock
+  const mockOnSearch = jest.fn()
+  const mockOnAddSearch = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockUseRouter.mockReturnValue({
-      push: mockPush,
-    })
-    mockUseSearchHistoryStore.mockReturnValue({
-      searches: ['react', 'typescript'],
-      addSearch: mockAddSearch,
+    mockUseSearch.mockReturnValue({
+      onSearch: mockOnSearch,
+      onAddSearch: mockOnAddSearch,
+      recentSearches: ['react', 'typescript'],
     })
   })
 
@@ -55,7 +46,7 @@ describe('useResultsLogic', () => {
     expect(result.current.searchQuery).toBe('')
   })
 
-  it('should get recent searches from store', () => {
+  it('should return recentSearches from useSearch', () => {
     mockUseSearchParams.mockReturnValue({
       get: jest.fn().mockReturnValue('test'),
     })
@@ -65,18 +56,7 @@ describe('useResultsLogic', () => {
     expect(result.current.recentSearches).toEqual(['react', 'typescript'])
   })
 
-  it('should provide onAddSearch function', () => {
-    mockUseSearchParams.mockReturnValue({
-      get: jest.fn().mockReturnValue('test'),
-    })
-
-    const { result } = renderHook(() => useResultsLogic())
-
-    expect(result.current.onAddSearch).toBeDefined()
-    expect(typeof result.current.onAddSearch).toBe('function')
-  })
-
-  it('should call addSearch from store when onAddSearch is called', () => {
+  it('should delegate onAddSearch to useSearch', () => {
     mockUseSearchParams.mockReturnValue({
       get: jest.fn().mockReturnValue('test'),
     })
@@ -85,17 +65,18 @@ describe('useResultsLogic', () => {
 
     result.current.onAddSearch('new search')
 
-    expect(mockAddSearch).toHaveBeenCalledWith('new search')
+    expect(mockOnAddSearch).toHaveBeenCalledWith('new search')
   })
 
-  it('should provide onSearch function', () => {
+  it('should delegate onSearch to useSearch', () => {
     mockUseSearchParams.mockReturnValue({
       get: jest.fn().mockReturnValue('test'),
     })
 
     const { result } = renderHook(() => useResultsLogic())
 
-    expect(result.current.onSearch).toBeDefined()
-    expect(typeof result.current.onSearch).toBe('function')
+    result.current.onSearch('query')
+
+    expect(mockOnSearch).toHaveBeenCalledWith('query')
   })
 })
